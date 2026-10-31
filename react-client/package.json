@@ -1,0 +1,35 @@
+{
+    "name": "react-client",
+    "private": true,
+    "version": "0.0.0",
+    "type": "module",
+    "scripts": {
+        "dev": "vite",
+        "build": "vite build",
+        "lint": "eslint .",
+        "format": "prettier --write \"**/*.{js,jsx,ts,tsx,json,css,scss}\"",
+        "preview": "vite preview",
+        "test:pact": "mocha src/tests/**/*.spec.js"
+    },
+    "dependencies": {
+        "@pact-foundation/pact": "^17.1.3",
+        "axios": "^1.20.0",
+        "chai": "^6.2.2",
+        "mocha": "^12.0.0",
+        "prettier": "^3.9.10",
+        "react": "^19.2.8",
+        "react-dom": "^19.2.8"
+    },
+    "devDependencies": {
+        "@eslint/js": "^10.0.1",
+        "@types/react": "^19.2.18",
+        "@types/react-dom": "^19.2.4",
+        "@vitejs/plugin-react": "^6.1.0",
+        "eslint": "^10.9.0",
+        "eslint-plugin-react-hooks": "^7.1.1",
+        "eslint-plugin-react-refresh": "^0.5.4",
+        "globals": "^17.11.0",
+        "vite": "^8.2.2"
+    },
+    "packageManager": "yarn@1.22.22+sha1.ac34549e6aa8e7ead463a7407e1c7390f61a6610"
+}

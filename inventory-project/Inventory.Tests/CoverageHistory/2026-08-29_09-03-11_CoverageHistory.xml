@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<coverage version="1.0" date="2026-08-29_09-03-11" tag="">
+  <assembly name="Inventory.Application">
+    <class name="Inventory.Application.DependencyInjection" coveredlines="0" coverablelines="8" totallines="27" coveredbranches="0" totalbranches="0" coveredcodeelements="0" fullcoveredcodeelements="0" totalcodeelements="1" />
+    <class name="Inventory.Application.Items.CreateItem.CreateItemCommand" coveredlines="1" coverablelines="1" totallines="7" coveredbranches="0" totalbranches="0" coveredcodeelements="1" fullcoveredcodeelements="1" totalcodeelements="1" />
+    <class name="Inventory.Application.Items.CreateItem.CreateItemHandler" coveredlines="11" coverablelines="11" totallines="30" coveredbranches="0" totalbranches="0" coveredcodeelements="2" fullcoveredcodeelements="2" totalcodeelements="2" />
+    <class name="Inventory.Application.Items.EventHandlers.UpdateStockWhenTransactionCompleted" coveredlines="23" coverablelines="23" totallines="48" coveredbranches="6" totalbranches="6" coveredcodeelements="2" fullcoveredcodeelements="2" totalcodeelements="2" />
+    <class name="Inventory.Application.Items.GetItems.GetItemsQuery" coveredlines="0" coverablelines="1" totallines="7" coveredbranches="0" totalbranches="0" coveredcodeelements="0" fullcoveredcodeelements="0" totalcodeelements="1" />
+    <class name="Inventory.Application.Items.GetItems.ItemDto" coveredlines="0" coverablelines="7" totallines="11" coveredbranches="0" totalbranches="0" coveredcodeelements="0" fullcoveredcodeelements="0" totalcodeelements="7" />
+    <class name="Inventory.Application.Transactions.CompleteTransaction.CompleteTransactionCommand" coveredlines="1" coverablelines="1" totallines="11" coveredbranches="0" totalbranches="0" coveredcodeelements="1" fullcoveredcodeelements="1" totalcodeelements="1" />
+    <class name="Inventory.Application.Transactions.CompleteTransaction.CompleteTransactionHandler" coveredlines="15" coverablelines="15" totallines="41" coveredbranches="2" totalbranches="2" coveredcodeelements="2" fullcoveredcodeelements="2" totalcodeelements="2" />
+    <class name="Inventory.Application.Transactions.CreateTransaction.CreateTransacionItemCommand" coveredlines="0" coverablelines="1" totallines="19" coveredbranches="0" totalbranches="0" coveredcodeelements="0" fullcoveredcodeelements="0" totalcodeelements="1" />
+    <class name="Inventory.Application.Transactions.CreateTransaction.CreateTransactionCommand" coveredlines="0" coverablelines="6" totallines="19" coveredbranches="0" totalbranches="0" coveredcodeelements="0" fullcoveredcodeelements="0" totalcodeelements="6" />
+    <class name="Inventory.Application.Transactions.CreateTransaction.CreateTransactionHandler" coveredlines="0" coverablelines="36" totallines="63" coveredbranches="0" totalbranches="8" coveredcodeelements="0" fullcoveredcodeelements="0" totalcodeelements="2" />
+  </assembly>
+  <assembly name="Inventory.Domain">
+    <class name="Inventory.Domain.DependencyInjection" coveredlines="0" coverablelines="5" totallines="17" coveredbranches="0" totalbranches="0" coveredcodeelements="0" fullcoveredcodeelements="0" totalcodeelements="1" />
+    <class name="Inventory.Domain.Items.AverageCostStrategy" coveredlines="7" coverablelines="7" totallines="14" coveredbranches="0" totalbranches="0" coveredcodeelements="1" fullcoveredcodeelements="1" totalcodeelements="1" />
+    <class name="Inventory.Domain.Items.Item" coveredlines="40" coverablelines="52" totallines="89" coveredbranches="8" totalbranches="12" coveredcodeelements="9" fullcoveredcodeelements="7" totalcodeelements="11" />
+    <class name="Inventory.Domain.Items.ItemErrors" coveredlines="4" coverablelines="12" totallines="28" coveredbranches="0" totalbranches="0" coveredcodeelements="3" fullcoveredcodeelements="3" totalcodeelements="5" />
+    <class name="Inventory.Domain.Shared.CostValue" coveredlines="12" coverablelines="15" totallines="27" coveredbranches="2" totalbranches="4" coveredcodeelements="4" fullcoveredcodeelements="3" totalcodeelements="5" />
+    <class name="Inventory.Domain.Shared.QuantityValue" coveredlines="14" coverablelines="16" totallines="28" coveredbranches="2" totalbranches="4" coveredcodeelements="6" fullcoveredcodeelements="5" totalcodeelements="7" />
+    <class name="Inventory.Domain.Transactions.Events.ReservationTransactionFailed" coveredlines="0" coverablelines="1" totallines="5" coveredbranches="0" totalbranches="0" coveredcodeelements="0" fullcoveredcodeelements="0" totalcodeelements="1" />
+    <class name="Inventory.Domain.Transactions.Events.TransactionCompleted" coveredlines="12" coverablelines="14" totallines="24" coveredbranches="0" totalbranches="0" coveredcodeelements="5" fullcoveredcodeelements="5" totalcodeelements="7" />
+    <class name="Inventory.Domain.Transactions.Events.TransactionItemAdded" coveredlines="1" coverablelines="1" totallines="10" coveredbranches="0" totalbranches="0" coveredcodeelements="1" fullcoveredcodeelements="1" totalcodeelements="1" />
+    <class name="Inventory.Domain.Transactions.Events.TransactionItemReserved" coveredlines="0" coverablelines="11" totallines="23" coveredbranches="0" totalbranches="0" coveredcodeelements="0" fullcoveredcodeelements="0" totalcodeelements="6" />
+    <class name="Inventory.Domain.Transactions.Events.TransactionItemUnreserved" coveredlines="0" coverablelines="11" totallines="23" coveredbranches="0" totalbranches="0" coveredcodeelements="0" fullcoveredcodeelements="0" totalcodeelements="6" />
+    <class name="Inventory.Domain.Transactions.Events.TransactionReserved" coveredlines="0" coverablelines="3" totallines="15" coveredbranches="0" totalbranches="0" coveredcodeelements="0" fullcoveredcodeelements="0" totalcodeelements="3" />
+    <class name="Inventory.Domain.Transactions.Exceptions.TransactionCreationException" coveredlines="0" coverablelines="3" totallines="16" coveredbranches="0" totalbranches="0" coveredcodeelements="0" fullcoveredcodeelements="0" totalcodeelements="1" />
+    <class name="Inventory.Domain.Transactions.Transaction" coveredlines="37" coverablelines="89" totallines="135" coveredbranches="4" totalbranches="22" coveredcodeelements="11" fullcoveredcodeelements="9" totalcodeelements="17" />
+    <class name="Inventory.Domain.Transactions.TransactionFactory" coveredlines="10" coverablelines="36" totallines="65" coveredbranches="5" totalbranches="20" coveredcodeelements="1" fullcoveredcodeelements="0" totalcodeelements="2" />
+    <class name="Inventory.Domain.Transactions.TransactionItem" coveredlines="13" coverablelines="19" totallines="35" coveredbranches="0" totalbranches="0" coveredcodeelements="6" fullcoveredcodeelements="6" totalcodeelements="8" />
+    <class name="Inventory.Domain.Users.User" coveredlines="0" coverablelines="21" totallines="37" coveredbranches="0" totalbranches="6" coveredcodeelements="0" fullcoveredcodeelements="0" totalcodeelements="5" />
+  </assembly>
+</coverage>

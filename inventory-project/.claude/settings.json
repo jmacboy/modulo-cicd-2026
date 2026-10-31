@@ -1,0 +1,16 @@
+{
+  "hooks": {
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node .claude/hooks/prompt-submit-test-writer.js",
+            "timeout": 10,
+            "statusMessage": "Checking test-writer delegation rule..."
+          }
+        ]
+      }
+    ]
+  }
+}
