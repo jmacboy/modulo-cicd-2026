@@ -1,0 +1,3 @@
+dotnet-format inventory-project --check
+cd react-client
+yarn format
