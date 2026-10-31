@@ -9,8 +9,8 @@ public static class DependencyInjection
     public static IServiceCollection AddDomain(this IServiceCollection services)
     {
         //Scoped, Transient, Singleton
-                services.AddSingleton<ICostStrategy, AverageCostStrategy>();
-                    services.AddSingleton<ITransactionFactory, TransactionFactory>();
+        services.AddSingleton<ICostStrategy, AverageCostStrategy>();
+        services.AddSingleton<ITransactionFactory, TransactionFactory>();
 
         return services;
     }
