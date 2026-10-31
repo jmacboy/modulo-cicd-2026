@@ -1,0 +1,3 @@
+{
+  "*.cs": "dotnet format Inventory.sln --include"
+}
