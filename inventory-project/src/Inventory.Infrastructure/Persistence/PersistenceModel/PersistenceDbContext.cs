@@ -17,6 +17,13 @@ namespace Inventory.Infrastructure.Persistence.StoredModel
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Entity<ItemPersistenceModel>()
+                .Property(x => x.IsDeleted)
+                .HasDefaultValue(false);
+
+            modelBuilder.Entity<ItemPersistenceModel>()
+                .HasQueryFilter(x => !x.IsDeleted);
         }
 
         public void Migrate()

@@ -45,6 +45,15 @@ namespace Inventory.Infrastructure.Persistence.DomainModel.Config
                 .HasConversion(converter)
                 .HasColumnName("unitaryCost");
 
+            builder.Property(x => x.IsDeleted)
+                .HasColumnName("isDeleted")
+                .HasDefaultValue(false);
+
+            builder.Property(x => x.DeletedAt)
+                .HasColumnName("deletedAt");
+
+            builder.HasQueryFilter(x => !x.IsDeleted);
+
             builder.Ignore("_domainEvents");
             builder.Ignore(x => x.DomainEvents);
 

@@ -32,4 +32,11 @@ internal class ItemPersistenceModel
     public decimal UnitaryCost { get; set; }
 
     public DateTime CreationDate { get; set; } = DateTime.Now;
+
+    [Column("isDeleted")]
+    [Required]
+    public bool IsDeleted { get; set; }
+
+    [Column("deletedAt")]
+    public DateTime? DeletedAt { get; set; }
 }

@@ -24,5 +24,12 @@ public static class ItemErrors
             ErrorType.Validation);
 
     public static Error NameIsRequired() => new Error("NameIsRequired", "The item name is required", ErrorType.Validation);
+
+    public static Error ItemAlreadyDeleted() =>
+        new Error("ItemAlreadyDeleted", "The item has already been deleted", ErrorType.Validation);
+
+    public static Error CannotDeleteWithReservedStock(int reservedStock) =>
+        new Error("CannotDeleteWithReservedStock", "The item has {reservedStock} reserved units and cannot be deleted",
+            ErrorType.Validation, reservedStock);
 }
 

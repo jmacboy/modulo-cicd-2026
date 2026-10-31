@@ -19,12 +19,6 @@ internal class ItemRepository : IItemRepository
 
     }
 
-    public async Task DeleteAsync(Guid id)
-    {
-        var obj = await GetByIdAsync(id);
-        _dbContext.Item.Remove(obj);
-    }
-
     public async Task<Item?> GetByIdAsync(Guid id, bool readOnly = false)
     {
         if (readOnly)

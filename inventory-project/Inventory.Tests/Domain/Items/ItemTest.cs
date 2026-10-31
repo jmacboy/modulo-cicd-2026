@@ -109,5 +109,67 @@ namespace Inventory.Tests.Domain.Items
                 Assert.Equal(ItemErrors.CostStrategyNotProvided().Description, e.Error.Description);
             }
         }
+
+        [Fact]
+        public void Delete_ActiveItem_MarksItemAsDeleted()
+        {
+            //Arrange
+            var item = new Item(Guid.NewGuid(), "Widget");
+
+            //Act
+            item.Delete();
+
+            //Assert
+            Assert.True(item.IsDeleted);
+        }
+
+        [Fact]
+        public void Delete_ActiveItem_SetsDeletedAtToCurrentUtcTime()
+        {
+            //Arrange
+            var item = new Item(Guid.NewGuid(), "Widget");
+            var before = DateTime.UtcNow;
+
+            //Act
+            item.Delete();
+
+            //Assert
+            var after = DateTime.UtcNow;
+            Assert.NotNull(item.DeletedAt);
+            Assert.InRange(item.DeletedAt!.Value, before, after);
+        }
+
+        [Fact]
+        public void Delete_AlreadyDeletedItem_ThrowsDomainException()
+        {
+            //Arrange
+            var item = new Item(Guid.NewGuid(), "Widget");
+            item.Delete();
+
+            //Act
+            var ex = Assert.Throws<DomainException>(() => item.Delete());
+
+            //Assert
+            Assert.Equal(ItemErrors.ItemAlreadyDeleted().Code, ex.Error.Code);
+            Assert.Equal(ItemErrors.ItemAlreadyDeleted().Description, ex.Error.Description);
+        }
+
+        [Fact]
+        public void Delete_ItemWithReservedStock_ThrowsDomainException()
+        {
+            //Arrange
+            var item = new Item(Guid.NewGuid(), "Widget");
+            item.AddStock(10, 5.0m, new AverageCostStrategy());
+            item.ReserveStock(3);
+
+            //Act
+            var ex = Assert.Throws<DomainException>(() => item.Delete());
+
+            //Assert
+            Assert.Equal(ItemErrors.CannotDeleteWithReservedStock(3).Code, ex.Error.Code);
+            Assert.Equal(ItemErrors.CannotDeleteWithReservedStock(3).Description, ex.Error.Description);
+            Assert.False(item.IsDeleted);
+            Assert.Null(item.DeletedAt);
+        }
     }
 }
