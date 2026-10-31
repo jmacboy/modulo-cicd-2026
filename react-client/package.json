@@ -7,7 +7,7 @@
         "dev": "vite",
         "build": "vite build",
         "lint": "eslint .",
-        "format": "prettier --write \"**/*.{js,jsx,ts,tsx,json,css,scss}\"",
+        "format": "prettier --write .",
         "preview": "vite preview",
         "test:pact": "mocha src/tests/**/*.spec.js"
     },
