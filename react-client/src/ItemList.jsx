@@ -1,6 +1,27 @@
 import { useEffect, useState } from 'react';
 import { ItemService } from './services/ItemService';
 
+const TrashIcon = () => (
+    <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="16"
+        height="16"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        aria-hidden="true"
+        focusable="false"
+    >
+        <path d="M3 6h18" />
+        <path d="M8 6V4h8v2" />
+        <path d="M19 6l-1 14H6L5 6" />
+        <path d="M10 11v6M14 11v6" />
+    </svg>
+);
+
 const ItemList = ({ reload }) => {
     const [itemList, setItemList] = useState();
     const [deleteError, setDeleteError] = useState(null);
@@ -48,7 +69,16 @@ const ItemList = ({ reload }) => {
                                 <td>{item.id}</td>
                                 <td>{item.itemName}</td>
                                 <td>
-                                    <button type="button" onClick={() => handleDelete(item.id)}>
+                                    <button
+                                        type="button"
+                                        onClick={() => handleDelete(item.id)}
+                                        style={{
+                                            display: 'inline-flex',
+                                            alignItems: 'center',
+                                            gap: '0.25rem',
+                                        }}
+                                    >
+                                        <TrashIcon />
                                         Delete
                                     </button>
                                 </td>
