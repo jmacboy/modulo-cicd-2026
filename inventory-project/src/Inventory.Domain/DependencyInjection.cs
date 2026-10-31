@@ -10,7 +10,7 @@ public static class DependencyInjection
     {
         //Scoped, Transient, Singleton
                 services.AddSingleton<ICostStrategy, AverageCostStrategy>();
-                services.AddSingleton<ITransactionFactory, TransactionFactory>();
+                    services.AddSingleton<ITransactionFactory, TransactionFactory>();
 
         return services;
     }
