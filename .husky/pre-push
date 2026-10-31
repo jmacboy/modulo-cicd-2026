@@ -1,1 +1,1 @@
-dotnet test inventory-project --filter Category=Unit
+dotnet test inventory-project/Inventory.Tests
