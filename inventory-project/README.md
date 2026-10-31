@@ -1,25 +1,28 @@
 # Store Inventory
 
-This repository uses PostgreSQL for the inventory database. The root Compose file exposes it with the same host-visible settings configured in `src/Inventory.WebApi/appsettings.json`.
+This repository uses PostgreSQL for the inventory database. The Compose file at the repository root (`../docker-compose.yml`) exposes it with the same host-visible settings configured in `src/Inventory.WebApi/appsettings.json`.
 
 ## Quick path
 
-From the repository root:
+Run the `docker compose` commands from the repository root (the parent of `inventory-project/`), and the `dotnet` commands from `inventory-project/`:
 
 ```bash
-# Start PostgreSQL in the background
+# From the repository root: start PostgreSQL in the background
 docker compose up -d postgres
 
 # Check that the container is running and healthy
 docker compose ps
 
-# Apply the existing EF Core migrations
+# From inventory-project/: apply the existing EF Core migrations
+cd inventory-project
 dotnet ef database update --project src/Inventory.Infrastructure --startup-project src/Inventory.WebApi --context PersistenceDbContext
 ```
 
 The database is available at `localhost:5432` with database `StoreInventory`, user `postgres`, and password `postgresspassword`.
 
 ## Stop and inspect
+
+From the repository root:
 
 ```bash
 # Stop the container and keep its data volume
