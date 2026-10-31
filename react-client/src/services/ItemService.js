@@ -3,6 +3,7 @@ export const ItemService = (baseUrl = 'https://localhost:7297') => {
     return {
         getItemList: () => {
             return new Promise((resolve, reject) => {
+                console.log('Fetching item list from API...');
                 axios
                     .get(`${baseUrl}/api/Item`, {
                         headers: {
