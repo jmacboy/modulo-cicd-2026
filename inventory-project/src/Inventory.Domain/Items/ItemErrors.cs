@@ -32,4 +32,3 @@ public static class ItemErrors
         new Error("CannotDeleteWithReservedStock", "The item has {reservedStock} reserved units and cannot be deleted",
             ErrorType.Validation, reservedStock);
 }
-
