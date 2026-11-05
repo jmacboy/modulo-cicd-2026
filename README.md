@@ -102,13 +102,47 @@ Reglas de cada tipo de test:
 
 ## Hooks de Git
 
-| Momento | Qué se ejecuta |
-|---|---|
-| `pre-commit` | `npx lint-staged`: `dotnet format` sobre los `*.cs` y `prettier --write` en `react-client` |
-| `pre-push` | `dotnet test inventory-project/Inventory.Tests` |
+[Husky](https://typicode.github.io/husky/) versiona los hooks de Git en `.husky/`, de modo que todo
+el equipo ejecuta las mismas validaciones antes de compartir código. Si un hook falla, Git cancela
+la operación.
 
-Los hooks solo funcionan después de `pnpm install` en la raíz. No los omitas con `--no-verify`.
-Junto con los tests relevantes ejecutados en local, son la condición para integrar en `main`.
+| Momento | Qué se ejecuta | Si falla |
+|---|---|---|
+| `pre-commit` | `npx lint-staged`: formatea solo los archivos en stage | No se crea el commit |
+| `pre-push` | `dotnet test inventory-project/Inventory.Tests` (tests unitarios) | No se hace el push |
+
+### Activación
+
+1. Ejecuta `pnpm install` en la raíz. El script `prepare` de `package.json` ejecuta `husky`, que
+   configura Git para usar los hooks del repositorio.
+2. Instala las herramientas que usan los hooks: `yarn install` en `react-client/` y `dotnet restore`
+   en `inventory-project/`.
+3. Comprueba la activación con `git config core.hooksPath`. Debe mostrar `.husky/_`.
+
+Cada worktree nuevo necesita estos mismos pasos. No edites `.husky/_/`: lo genera Husky. Los hooks
+del proyecto son `.husky/pre-commit` y `.husky/pre-push`.
+
+### Qué hace lint-staged
+
+Cada paquete tiene su propia configuración, y cada tarea se ejecuta dentro del directorio de su
+paquete:
+
+| Paquete | Configuración | Archivos | Tarea |
+|---|---|---|---|
+| `inventory-project/` | `.lintstagedrc.mjs` | `*.cs` | `dotnet format Inventory.sln --include <archivos>` |
+| `react-client/` | `.lintstagedrc.json` | `*.{js,jsx,ts,tsx,json,css,scss}` | `prettier --write` |
+
+Los cambios de formato se incluyen en el mismo commit. Los archivos que no coinciden con estos
+patrones, como los `.md`, no se procesan.
+
+### Alcance
+
+Los hooks no reemplazan las demás pruebas: los tests de integración y los contratos Pact no se
+ejecutan automáticamente, así que córrelos en local cuando tu cambio los afecte (ver
+[Tests](#tests)).
+
+No omitas los hooks con `--no-verify` ni `HUSKY=0`. Junto con los tests relevantes ejecutados en
+local, son la condición para integrar en `main`.
 
 ## Flujo de trabajo
 
