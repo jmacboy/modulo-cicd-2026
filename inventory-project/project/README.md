@@ -3,7 +3,7 @@
 ## Project Structure
 
 ```
-ms2025-store-inventory-main/
+inventory-project/
 ├── src/
 │   ├── Inventory.Domain/          # Aggregates, Value Objects, Domain Events
 │   ├── Inventory.Application/     # Handlers (CQRS), Commands, Queries
@@ -18,7 +18,7 @@ ms2025-store-inventory-main/
 
 ---
 
-## CI Integration
+## Running Tests Locally
 
 ```bash
 # Run all tests

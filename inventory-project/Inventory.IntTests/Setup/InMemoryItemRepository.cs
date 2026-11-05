@@ -23,16 +23,11 @@ namespace Inventory.IntTests.Setup
             return Task.CompletedTask;
         }
 
-        public Task DeleteAsync(Guid id)
-        {
-            _items.TryRemove(id, out _);
-            return Task.CompletedTask;
-        }
-
+        // Mirrors the EF Core global query filter: soft-deleted items are invisible to reads.
         public Task<Item?> GetByIdAsync(Guid id, bool readOnly = false)
         {
             _items.TryGetValue(id, out var item);
-            return Task.FromResult(item);
+            return Task.FromResult(item is { IsDeleted: false } ? item : null);
         }
 
         public Task UpdateAsync(Item item)

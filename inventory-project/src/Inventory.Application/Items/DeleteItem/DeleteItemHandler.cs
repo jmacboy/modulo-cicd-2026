@@ -18,14 +18,23 @@ public class DeleteItemHandler : IRequestHandler<DeleteItemCommand, Result<bool>
 
     public async Task<Result<bool>> Handle(DeleteItemCommand request, CancellationToken cancellationToken)
     {
-        var existingItem = await _itemRepository.GetByIdAsync(request.Id, readOnly: true);
+        var existingItem = await _itemRepository.GetByIdAsync(request.Id);
 
         if (existingItem == null)
         {
             return Result.Failure<bool>(Error.NotFound("ItemNotFound", "Item with id {itemId} not found", request.Id.ToString()));
         }
 
-        await _itemRepository.DeleteAsync(request.Id);
+        try
+        {
+            existingItem.Delete();
+        }
+        catch (DomainException ex)
+        {
+            return Result.Failure<bool>(ex.Error);
+        }
+
+        await _itemRepository.UpdateAsync(existingItem);
 
         await _unitOfWork.CommitAsync(cancellationToken);
 

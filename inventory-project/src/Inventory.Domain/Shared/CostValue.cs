@@ -24,4 +24,3 @@ public record CostValue
         return new CostValue(a);
     }
 }
-

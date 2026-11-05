@@ -11,6 +11,8 @@ public class Item : AggregateRoot
     public QuantityValue Reserved { get; private set; }
     public QuantityValue Available { get; private set; }
     public CostValue UnitaryCost { get; private set; }
+    public bool IsDeleted { get; private set; }
+    public DateTime? DeletedAt { get; private set; }
 
     public Item(Guid id, string name) : base(id)
     {
@@ -23,6 +25,8 @@ public class Item : AggregateRoot
         Reserved = 0;
         Available = 0;
         UnitaryCost = 0;
+        IsDeleted = false;
+        DeletedAt = null;
     }
 
     /// <summary>
@@ -81,6 +85,24 @@ public class Item : AggregateRoot
         }
         Reserved -= quantityToUnreserve;
         Available += quantityToUnreserve;
+    }
+
+    /// <summary>
+    /// Marks the item as deleted (soft delete). The item remains persisted but is hidden from reads.
+    /// </summary>
+    /// <exception cref="DomainException">Thrown when the item is already deleted.</exception>
+    public void Delete()
+    {
+        if (IsDeleted)
+        {
+            throw new DomainException(ItemErrors.ItemAlreadyDeleted());
+        }
+        if (Reserved > 0)
+        {
+            throw new DomainException(ItemErrors.CannotDeleteWithReservedStock(Reserved));
+        }
+        IsDeleted = true;
+        DeletedAt = DateTime.UtcNow;
     }
 
     //Need for EF Core
