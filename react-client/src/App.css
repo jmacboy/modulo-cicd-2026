@@ -181,18 +181,40 @@
     }
 }
 
+.add-stock-dialog {
+    padding: 0;
+    width: min(24rem, calc(100vw - 2rem));
+    color: var(--text);
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    box-shadow: var(--shadow);
+
+    &::backdrop {
+        background: rgba(0, 0, 0, 0.4);
+    }
+
+    h2 {
+        margin: 0 0 0.5rem;
+        font-size: 1.25rem;
+    }
+}
+
 .add-stock-form {
     display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 0.25rem 0.5rem;
-
-    input {
-        width: 7rem;
-    }
+    flex-direction: column;
+    gap: 0.25rem;
+    padding: 1.25rem;
+    text-align: left;
 
     p[role='alert'] {
-        flex-basis: 100%;
-        margin: 0;
+        margin: 0.5rem 0 0;
     }
+}
+
+.add-stock-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.5rem;
+    margin-top: 0.75rem;
 }

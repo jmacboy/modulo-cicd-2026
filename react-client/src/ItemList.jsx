@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { ItemService } from './services/ItemService';
-import AddStockForm from './AddStockForm';
+import AddStockDialog from './AddStockDialog';
 import { getErrorMessage } from './utils/getErrorMessage';
 
 const iconProps = {
@@ -45,6 +45,7 @@ const ItemList = ({ reload }) => {
     const [editingId, setEditingId] = useState(null);
     const [editName, setEditName] = useState('');
     const [refreshCount, setRefreshCount] = useState(0);
+    const [stockItem, setStockItem] = useState(null);
     const editInputRef = useRef(null);
 
     // Move focus to the name input only after the user clicks Edit (user-initiated focus change).
@@ -169,11 +170,9 @@ const ItemList = ({ reload }) => {
                                 <td>{item.available}</td>
                                 <td>{item.unitaryCost.toFixed(2)}</td>
                                 <td>
-                                    <AddStockForm
-                                        itemId={item.id}
-                                        itemName={item.itemName}
-                                        onStockAdded={() => setRefreshCount((curr) => curr + 1)}
-                                    />
+                                    <button type="button" onClick={() => setStockItem(item)}>
+                                        Add stock
+                                    </button>
                                 </td>
                                 <td>
                                     <button
@@ -198,6 +197,11 @@ const ItemList = ({ reload }) => {
                     )}
                 </tbody>
             </table>
+            <AddStockDialog
+                item={stockItem}
+                onClose={() => setStockItem(null)}
+                onStockAdded={() => setRefreshCount((curr) => curr + 1)}
+            />
         </>
     );
 };
