@@ -3,8 +3,9 @@ import { ItemService } from './services/ItemService';
 import { getErrorMessage } from './utils/getErrorMessage';
 
 // One modal for the whole list: `item` is the selected item, or null when the dialog is closed.
-// Every close path (Escape, Cancel, backdrop click, success) goes through the native `close`
-// event, so the form is reset in one place and the parent is told the dialog is gone.
+// Every close path (Escape, Cancel, success) goes through the native `close` event, so the form
+// is reset in one place and the parent is told the dialog is gone. There is no backdrop-click
+// close: a click listener on the non-interactive <dialog> breaks code rules JS-5 and JS-6.
 const AddStockDialog = ({ item, onClose, onStockAdded }) => {
     const dialogRef = useRef(null);
     const quantityRef = useRef(null);
@@ -39,13 +40,6 @@ const AddStockDialog = ({ item, onClose, onStockAdded }) => {
         onClose();
     };
 
-    const handleBackdropClick = (event) => {
-        // The dialog has no padding, so a click whose target is the dialog itself hit the backdrop.
-        if (event.target === dialogRef.current) {
-            closeDialog();
-        }
-    };
-
     const handleSubmit = (event) => {
         event.preventDefault();
         setError(null);
@@ -77,7 +71,6 @@ const AddStockDialog = ({ item, onClose, onStockAdded }) => {
             className="add-stock-dialog"
             aria-labelledby="add-stock-title"
             onClose={handleClose}
-            onClick={handleBackdropClick}
         >
             <form className="add-stock-form" onSubmit={handleSubmit}>
                 <h2 id="add-stock-title">Add stock: {item?.itemName}</h2>
