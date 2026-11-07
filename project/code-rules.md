@@ -158,8 +158,9 @@ interactive element (`<button>`, `<a href>`, `<input>`, `<select>`) or rely on t
 behavior (a `<dialog>` already closes on Escape; a `<form>` submits with Enter).
 
 **Exception:** an element with an interactive ARIA `role` (for example `button`, `listbox`,
-`option`, `tab`), `tabIndex`, and full keyboard support per JS-6 counts as interactive, so it may
-carry these handlers. Prefer native elements; use this only for a custom widget that has no native
+`option`, `tab`) counts as interactive, so it may carry these handlers, when it implements the focus
+and keyboard behavior of the [WAI-ARIA APG](https://www.w3.org/WAI/ARIA/apg/patterns/) pattern for
+that role (see JS-6). Prefer native elements; use this only for a custom widget that has no native
 equivalent.
 
 **Why:** assistive technologies do not announce a `div` or `dialog` as clickable, and keyboard users
@@ -191,8 +192,13 @@ cannot reach or trigger it. The behavior exists only for mouse users.
 A visible element with `onClick` must also be operable from the keyboard (`onKeyDown`/`onKeyUp`/
 `onKeyPress`). Native interactive elements already satisfy this, so the fix is almost always to use
 a `<button>` instead of adding key handlers to a non-interactive element (see JS-5). Only when a
-custom widget is unavoidable, give it an interactive ARIA `role`, `tabIndex={0}`, and a key handler
-that matches the click behavior (Enter and Space); such a widget is the JS-5 exception.
+custom widget is unavoidable, give it an interactive ARIA `role` and the focus and keyboard behavior
+of the WAI-ARIA APG pattern for that role; such a widget is the JS-5 exception:
+
+- a single control (`role="button"`): `tabIndex={0}` and Enter and Space trigger the click action;
+- a composite widget (`tablist`, `listbox`, `menu`, ...): managed focus with a roving tabindex
+  (`tabIndex={0}` on the active item, `tabIndex={-1}` on the others) and the arrow-key navigation
+  the pattern defines, so the whole widget is a single Tab stop.
 
 **Why:** keyboard-only and screen reader users cannot trigger an action that responds only to the
 mouse.
