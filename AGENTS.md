@@ -18,6 +18,14 @@ in [`project/`](project/README.md), then the nested instructions for the package
 - Before merging, the Husky hooks (`pre-commit`, `pre-push`) must pass and the relevant tests
   must pass locally; a broken `main` is fixed or reverted immediately.
 
+## MUST: code rules scan before every push
+
+- **Before every `git push`, run the `code-rules-check` skill**
+  (`.claude/skills/code-rules-check/SKILL.md`): it reads [`project/code-rules.md`](project/code-rules.md)
+  and scans the files changed in `origin/main...HEAD`. Fixed violations are staged and committed
+  (`fix(<scope>): apply code rules <IDs>`). Push only on `PASS`, or after the user explicitly
+  accepts a reported violation.
+
 ## MUST: one worktree per feature
 
 - **Before starting any feature, create a worktree per
@@ -94,6 +102,8 @@ WebApi ──► Application ──► Domain
   and by `dotnet format` on commit. Do not reformat unrelated code.
 - react-client: Prettier (`react-client/.prettierrc.json`: single quotes, 4 spaces, width 100,
   LF) and ESLint (`eslint.config.js`).
+- Follow [`project/code-rules.md`](project/code-rules.md) (rule IDs such as `JS-1`, sourced from
+  SonarQube findings); do not restate the rules here.
 
 ## Commands
 
