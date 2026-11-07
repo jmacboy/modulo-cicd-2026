@@ -36,6 +36,6 @@ jobs:
         cache: 'yarn'
         cache-dependency-path: react-client/yarn.lock
     - run: corepack enable
-    - run: yarn install --frozen-lockfile
+    - run: yarn install --frozen-lockfile --ignore-scripts
     - run: yarn build
     - run: yarn test:pact
