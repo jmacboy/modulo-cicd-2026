@@ -34,6 +34,26 @@ export const ItemService = (baseUrl = 'https://localhost:7297') => {
                     });
             });
         },
+        addStock: (id, { userCreatorId, quantity, unitaryCost }) => {
+            return new Promise((resolve, reject) => {
+                axios
+                    .post(
+                        `${baseUrl}/api/Item/${id}/stock`,
+                        { userCreatorId, quantity, unitaryCost },
+                        {
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                        },
+                    )
+                    .then((response) => {
+                        resolve(response.data);
+                    })
+                    .catch((error) => {
+                        reject(error);
+                    });
+            });
+        },
         deleteItem: (id) => {
             return new Promise((resolve, reject) => {
                 axios

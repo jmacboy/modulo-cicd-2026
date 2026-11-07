@@ -52,3 +52,15 @@ export const actualizarItemNombreRequeridoResponse = {
     description: like('The item name is required'),
     type: integer(2),
 };
+
+export const itemIdToAddStock = '3c4d5e6f-7081-92a3-b4c5-d6e7f8a9b0c1';
+
+export const agregarStockRequestBody = {
+    userCreatorId: '4d5e6f70-8192-a3b4-c5d6-e7f8a9b0c1d2',
+    quantity: 5,
+    unitaryCost: 10.5,
+};
+
+export const agregarStockResponse = {
+    value: uuid('5e6f7081-92a3-b4c5-d6e7-f8a9b0c1d2e3'),
+};
