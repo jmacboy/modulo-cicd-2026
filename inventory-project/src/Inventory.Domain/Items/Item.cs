@@ -105,6 +105,24 @@ public class Item : AggregateRoot
         DeletedAt = DateTime.UtcNow;
     }
 
+    /// <summary>
+    /// Renames the item. Only the name is editable; stock and cost are driven by transactions.
+    /// </summary>
+    /// <param name="newName">New name of the item</param>
+    /// <exception cref="DomainException">Thrown when the name is empty or the item is deleted.</exception>
+    public void Rename(string newName)
+    {
+        if (string.IsNullOrWhiteSpace(newName))
+        {
+            throw new DomainException(ItemErrors.NameIsRequired());
+        }
+        if (IsDeleted)
+        {
+            throw new DomainException(ItemErrors.CannotUpdateDeletedItem());
+        }
+        Name = newName;
+    }
+
     //Need for EF Core
     private Item() { }
 

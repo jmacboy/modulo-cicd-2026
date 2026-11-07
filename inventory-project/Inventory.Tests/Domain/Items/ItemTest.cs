@@ -171,5 +171,52 @@ namespace Inventory.Tests.Domain.Items
             Assert.False(item.IsDeleted);
             Assert.Null(item.DeletedAt);
         }
+
+        [Fact]
+        public void Rename_ValidName_UpdatesName()
+        {
+            //Arrange
+            var item = new Item(Guid.NewGuid(), "Widget");
+
+            //Act
+            item.Rename("Gadget");
+
+            //Assert
+            Assert.Equal("Gadget", item.Name);
+        }
+
+        [Theory]
+        [InlineData(null)]
+        [InlineData("")]
+        [InlineData("   ")]
+        public void Rename_NullOrWhitespaceName_ThrowsDomainException(string? newName)
+        {
+            //Arrange
+            var item = new Item(Guid.NewGuid(), "Widget");
+
+            //Act
+            var ex = Assert.Throws<DomainException>(() => item.Rename(newName!));
+
+            //Assert
+            Assert.Equal(ItemErrors.NameIsRequired().Code, ex.Error.Code);
+            Assert.Equal(ItemErrors.NameIsRequired().Description, ex.Error.Description);
+            Assert.Equal("Widget", item.Name);
+        }
+
+        [Fact]
+        public void Rename_DeletedItem_ThrowsDomainException()
+        {
+            //Arrange
+            var item = new Item(Guid.NewGuid(), "Widget");
+            item.Delete();
+
+            //Act
+            var ex = Assert.Throws<DomainException>(() => item.Rename("Gadget"));
+
+            //Assert
+            Assert.Equal(ItemErrors.CannotUpdateDeletedItem().Code, ex.Error.Code);
+            Assert.Equal(ItemErrors.CannotUpdateDeletedItem().Description, ex.Error.Description);
+            Assert.Equal("Widget", item.Name);
+        }
     }
 }

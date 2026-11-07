@@ -6,6 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Net.Http.Json;
 using System.Text;
 using System.Threading.Tasks;
@@ -101,6 +102,74 @@ namespace Inventory.IntTests.Controllers
             var body = await response.Content.ReadFromJsonAsync<GetItemsResponse>();
             Assert.NotNull(body);
             Assert.Contains(body.Value, i => i.Id == itemGuid && i.ItemName == itemName);
+        }
+
+        [Fact]
+        public async Task UpdateItem_WithValidRequest()
+        {
+            //Arrange
+            var client = _factory.CreateClient();
+            var itemGuid = Guid.NewGuid();
+            var newName = "Gadget";
+            var createResponse = await client.PostAsJsonAsync("/api/Item", new { Id = itemGuid, ItemName = "Widget" });
+            createResponse.EnsureSuccessStatusCode();
+
+            //Act
+            var response = await client.PutAsJsonAsync($"/api/Item/{itemGuid}", new { Name = newName });
+
+            //Assert
+            response.EnsureSuccessStatusCode();
+            var body = await response.Content.ReadFromJsonAsync<ItemUpdateResponse>();
+            Assert.NotNull(body);
+            Assert.True(body.IsSuccess);
+            Assert.False(body.IsFailure);
+            Assert.True(body.Value);
+
+            using var scope = _factory.Services.CreateScope();
+            var repository = scope.ServiceProvider.GetRequiredService<IItemRepository>();
+            var item = await repository.GetByIdAsync(itemGuid);
+            Assert.NotNull(item);
+            Assert.Equal(newName, item.Name);
+        }
+
+        [Fact]
+        public async Task UpdateItem_WithUnknownId()
+        {
+            //Arrange
+            var client = _factory.CreateClient();
+            var itemGuid = Guid.NewGuid();
+
+            //Act
+            var response = await client.PutAsJsonAsync($"/api/Item/{itemGuid}", new { Name = "Gadget" });
+
+            //Assert
+            Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+        }
+
+        [Fact]
+        public async Task UpdateItem_WithEmptyName()
+        {
+            //Arrange
+            var client = _factory.CreateClient();
+            var itemGuid = Guid.NewGuid();
+            var itemName = "Widget";
+            var createResponse = await client.PostAsJsonAsync("/api/Item", new { Id = itemGuid, ItemName = itemName });
+            createResponse.EnsureSuccessStatusCode();
+
+            //Act
+            var response = await client.PutAsJsonAsync($"/api/Item/{itemGuid}", new { Name = "" });
+
+            //Assert
+            Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+            var body = await response.Content.ReadFromJsonAsync<ErrorResponse>();
+            Assert.NotNull(body);
+            Assert.Equal(ItemErrors.NameIsRequired().Code, body.Code);
+
+            using var scope = _factory.Services.CreateScope();
+            var repository = scope.ServiceProvider.GetRequiredService<IItemRepository>();
+            var item = await repository.GetByIdAsync(itemGuid);
+            Assert.NotNull(item);
+            Assert.Equal(itemName, item.Name);
         }
     }
 }
