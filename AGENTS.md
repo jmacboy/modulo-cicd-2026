@@ -141,10 +141,12 @@ Full rules: [`project/git-conventions.md`](project/git-conventions.md). Summary:
 
 - Never commit to `main`. Short-lived branches: `feat/|fix/|chore/|docs/<feature-name>`
   (kebab-case), each in its own worktree (see trunk-based development above).
-- Conventional Commits (`feat(item): ...`, `chore(husky): ...`). Commit only when asked. Push,
+- Conventional Commits (`feat(item): ...`, `chore(husky): ...`), validated by commitlint
+  (`@commitlint/config-conventional`): allowed type, lower-case summary start, no trailing `.`,
+  header and body lines at most 100 characters. Commit only when asked. Push,
   PRs, and merges are human decisions.
-- Hooks: `pre-commit` runs `npx lint-staged` (`dotnet format`, `prettier`); `pre-push` runs the
-  unit tests.
+- Hooks: `pre-commit` runs `npx lint-staged` (`dotnet format`, `prettier`); `commit-msg` runs
+  commitlint; `pre-push` runs the unit tests.
 - For multi-step features, keep `odd/tasks/<feature-name>.md` updated in the feature worktree.
 
 ## Never
