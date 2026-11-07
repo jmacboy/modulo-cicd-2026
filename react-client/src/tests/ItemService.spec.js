@@ -15,6 +15,9 @@ import {
     actualizarItemResponse,
     actualizarItemNoEncontradoResponse,
     actualizarItemNombreRequeridoResponse,
+    itemIdToAddStock,
+    agregarStockRequestBody,
+    agregarStockResponse,
 } from './PactResponses.js';
 
 describe('El API de Items', () => {
@@ -246,6 +249,45 @@ describe('El API de Items', () => {
                             expect(error.response.data.type).to.be.a('number');
                         },
                     );
+            });
+        });
+    });
+    describe('Agregar stock a un item', () => {
+        it('retorna el id de la transacción de entrada registrada', () => {
+            //Arrange
+            provider
+                .given('agregar stock a un item', { id: itemIdToAddStock })
+                .uponReceiving('datos para agregar stock a un item existente')
+                .withRequest({
+                    method: 'POST',
+                    path: `/api/Item/${itemIdToAddStock}/stock`,
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: agregarStockRequestBody,
+                })
+                .willRespondWith({
+                    status: 200,
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: agregarStockResponse,
+                });
+            return provider.executeTest(async (mockServer) => {
+                // Act
+                itemService = ItemService(mockServer.url);
+                return itemService
+                    .addStock(itemIdToAddStock, agregarStockRequestBody)
+                    .then((response) => {
+                        // Assert — el pacto promete un id de transacción con forma de GUID, no un
+                        // valor concreto: el id lo genera el proveedor. El stock y el costo
+                        // promediado resultantes no se afirman acá; el consumidor los vuelve a
+                        // leer de la lista de items.
+                        expect(response.value).to.be.a('string');
+                        expect(response.value).to.match(
+                            /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i,
+                        );
+                    });
             });
         });
     });

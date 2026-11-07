@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { ItemService } from './services/ItemService';
+import AddStockDialog from './AddStockDialog';
 import { getErrorMessage } from './utils/getErrorMessage';
 
 const iconProps = {
@@ -43,6 +44,8 @@ const ItemList = ({ reload }) => {
     const [error, setError] = useState(null);
     const [editingId, setEditingId] = useState(null);
     const [editName, setEditName] = useState('');
+    const [refreshCount, setRefreshCount] = useState(0);
+    const [stockItem, setStockItem] = useState(null);
     const editInputRef = useRef(null);
 
     // Move focus to the name input only after the user clicks Edit (user-initiated focus change).
@@ -61,7 +64,7 @@ const ItemList = ({ reload }) => {
             .catch((err) => {
                 setError(getErrorMessage(err, 'The item list could not be loaded'));
             });
-    }, [reload]);
+    }, [reload, refreshCount]);
 
     const handleDelete = (id) => {
         setError(null);
@@ -121,6 +124,10 @@ const ItemList = ({ reload }) => {
                     <tr>
                         <th>ID</th>
                         <th>Name</th>
+                        <th>Stock</th>
+                        <th>Available</th>
+                        <th>Unitary cost</th>
+                        <th>Add stock</th>
                         <th></th>
                     </tr>
                 </thead>
@@ -138,6 +145,10 @@ const ItemList = ({ reload }) => {
                                         ref={editInputRef}
                                     />
                                 </td>
+                                <td>{item.stock}</td>
+                                <td>{item.available}</td>
+                                <td>{item.unitaryCost.toFixed(2)}</td>
+                                <td></td>
                                 <td>
                                     <button
                                         type="button"
@@ -155,6 +166,14 @@ const ItemList = ({ reload }) => {
                             <tr key={item.id}>
                                 <td>{item.id}</td>
                                 <td>{item.itemName}</td>
+                                <td>{item.stock}</td>
+                                <td>{item.available}</td>
+                                <td>{item.unitaryCost.toFixed(2)}</td>
+                                <td>
+                                    <button type="button" onClick={() => setStockItem(item)}>
+                                        Add stock
+                                    </button>
+                                </td>
                                 <td>
                                     <button
                                         type="button"
@@ -178,6 +197,11 @@ const ItemList = ({ reload }) => {
                     )}
                 </tbody>
             </table>
+            <AddStockDialog
+                item={stockItem}
+                onClose={() => setStockItem(null)}
+                onStockAdded={() => setRefreshCount((curr) => curr + 1)}
+            />
         </>
     );
 };

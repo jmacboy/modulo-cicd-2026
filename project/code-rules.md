@@ -147,3 +147,61 @@ useEffect(() => {
 
 Do not move focus on page load or on data refresh. Moving focus into a control the user just opened
 is expected; without it, keyboard users are left on a button that no longer exists.
+
+### JS-5: Do not attach mouse or keyboard listeners to non-interactive elements
+
+**Source:** SonarQube `javascript:S6847`.
+
+Do not put `onClick`, `onMouseDown`, `onKeyDown`, `onKeyUp`, or similar handlers on non-interactive
+elements (`div`, `span`, `p`, `li`, `td`, `dialog`, `section`, ...). Put the behavior on a native
+interactive element (`<button>`, `<a href>`, `<input>`, `<select>`) or rely on the element's native
+behavior (a `<dialog>` already closes on Escape; a `<form>` submits with Enter).
+
+**Why:** assistive technologies do not announce a `div` or `dialog` as clickable, and keyboard users
+cannot reach or trigger it. The behavior exists only for mouse users.
+
+**Bad**
+
+```jsx
+<dialog ref={dialogRef} onClick={handleBackdropClick}>...</dialog>
+<td onClick={() => setStockItem(item)}>{item.itemName}</td>
+```
+
+**Good**
+
+```jsx
+<dialog ref={dialogRef} onClose={handleClose}>
+    ...
+    <button type="button" onClick={closeDialog}>Cancel</button>
+</dialog>
+<td>
+    <button type="button" onClick={() => setStockItem(item)}>Add stock</button>
+</td>
+```
+
+### JS-6: Every visible click handler needs a keyboard equivalent
+
+**Source:** SonarQube `javascript:S1082`.
+
+A visible element with `onClick` must also be operable from the keyboard (`onKeyDown`/`onKeyUp`/
+`onKeyPress`). Native interactive elements already satisfy this, so the fix is almost always to use
+a `<button>` instead of adding key handlers to a non-interactive element (see JS-5). Only when a
+custom widget is unavoidable, give it a `role`, `tabIndex={0}`, and a key handler that matches the
+click behavior (Enter and Space).
+
+**Why:** keyboard-only and screen reader users cannot trigger an action that responds only to the
+mouse.
+
+**Bad**
+
+```jsx
+<span onClick={handleDelete}>Delete</span>
+```
+
+**Good**
+
+```jsx
+<button type="button" onClick={handleDelete}>
+    Delete
+</button>
+```

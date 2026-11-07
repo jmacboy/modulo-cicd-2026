@@ -1,324 +1,369 @@
 {
-    "consumer": {
-        "name": "react-client"
-    },
-    "interactions": [
+  "consumer": {
+    "name": "react-client"
+  },
+  "interactions": [
+    {
+      "description": "Un body vacío",
+      "providerStates": [
         {
-            "description": "Un body vacío",
-            "providerStates": [
-                {
-                    "name": "realizar una consulta de items"
-                }
-            ],
-            "request": {
-                "method": "GET",
-                "path": "/api/Item"
-            },
-            "response": {
-                "body": {
-                    "value": [
-                        {
-                            "available": 8,
-                            "id": "0c7a4eee-ab9c-4431-8de7-beb6559e5c4e",
-                            "itemName": "item1",
-                            "reserved": 2,
-                            "stock": 10,
-                            "unitaryCost": 12.5
-                        }
-                    ]
-                },
-                "headers": {
-                    "Content-Type": "application/json"
-                },
-                "matchingRules": {
-                    "body": {
-                        "$.value": {
-                            "combine": "AND",
-                            "matchers": [
-                                {
-                                    "match": "type",
-                                    "min": 1
-                                }
-                            ]
-                        },
-                        "$.value[*].available": {
-                            "combine": "AND",
-                            "matchers": [
-                                {
-                                    "match": "integer"
-                                }
-                            ]
-                        },
-                        "$.value[*].id": {
-                            "combine": "AND",
-                            "matchers": [
-                                {
-                                    "match": "regex",
-                                    "regex": "[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}"
-                                }
-                            ]
-                        },
-                        "$.value[*].itemName": {
-                            "combine": "AND",
-                            "matchers": [
-                                {
-                                    "match": "type"
-                                }
-                            ]
-                        },
-                        "$.value[*].reserved": {
-                            "combine": "AND",
-                            "matchers": [
-                                {
-                                    "match": "integer"
-                                }
-                            ]
-                        },
-                        "$.value[*].stock": {
-                            "combine": "AND",
-                            "matchers": [
-                                {
-                                    "match": "integer"
-                                }
-                            ]
-                        },
-                        "$.value[*].unitaryCost": {
-                            "combine": "AND",
-                            "matchers": [
-                                {
-                                    "match": "type"
-                                }
-                            ]
-                        }
-                    }
-                },
-                "status": 200
-            }
-        },
-        {
-            "description": "datos para crear un item",
-            "providerStates": [
-                {
-                    "name": "crear item",
-                    "params": {
-                        "id": "1a2b3c4d-5678-90ab-cdef-1234567890ab"
-                    }
-                }
-            ],
-            "request": {
-                "body": {
-                    "id": "1a2b3c4d-5678-90ab-cdef-1234567890ab",
-                    "itemName": "nuevoItem"
-                },
-                "headers": {
-                    "Content-Type": "application/json"
-                },
-                "method": "POST",
-                "path": "/api/Item"
-            },
-            "response": {
-                "body": {
-                    "value": "1a2b3c4d-5678-90ab-cdef-1234567890ab"
-                },
-                "headers": {
-                    "Content-Type": "application/json"
-                },
-                "matchingRules": {
-                    "body": {
-                        "$.value": {
-                            "combine": "AND",
-                            "matchers": [
-                                {
-                                    "match": "regex",
-                                    "regex": "[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}"
-                                }
-                            ]
-                        }
-                    }
-                },
-                "status": 200
-            }
-        },
-        {
-            "description": "un nombre vacío para un item existente",
-            "providerStates": [
-                {
-                    "name": "actualizar item",
-                    "params": {
-                        "id": "3c4d5e6f-7081-92a3-b4c5-d6e7f8a9b0c1"
-                    }
-                }
-            ],
-            "request": {
-                "body": {
-                    "name": ""
-                },
-                "headers": {
-                    "Content-Type": "application/json"
-                },
-                "method": "PUT",
-                "path": "/api/Item/3c4d5e6f-7081-92a3-b4c5-d6e7f8a9b0c1"
-            },
-            "response": {
-                "body": {
-                    "code": "NameIsRequired",
-                    "description": "The item name is required",
-                    "type": 2
-                },
-                "headers": {
-                    "Content-Type": "application/json"
-                },
-                "matchingRules": {
-                    "body": {
-                        "$.code": {
-                            "combine": "AND",
-                            "matchers": [
-                                {
-                                    "match": "type"
-                                }
-                            ]
-                        },
-                        "$.description": {
-                            "combine": "AND",
-                            "matchers": [
-                                {
-                                    "match": "type"
-                                }
-                            ]
-                        },
-                        "$.type": {
-                            "combine": "AND",
-                            "matchers": [
-                                {
-                                    "match": "integer"
-                                }
-                            ]
-                        }
-                    }
-                },
-                "status": 400
-            }
-        },
-        {
-            "description": "un nuevo nombre para un item existente",
-            "providerStates": [
-                {
-                    "name": "actualizar item",
-                    "params": {
-                        "id": "3c4d5e6f-7081-92a3-b4c5-d6e7f8a9b0c1"
-                    }
-                }
-            ],
-            "request": {
-                "body": {
-                    "name": "itemActualizado"
-                },
-                "headers": {
-                    "Content-Type": "application/json"
-                },
-                "method": "PUT",
-                "path": "/api/Item/3c4d5e6f-7081-92a3-b4c5-d6e7f8a9b0c1"
-            },
-            "response": {
-                "body": {
-                    "value": true
-                },
-                "headers": {
-                    "Content-Type": "application/json"
-                },
-                "matchingRules": {
-                    "body": {
-                        "$.value": {
-                            "combine": "AND",
-                            "matchers": [
-                                {
-                                    "match": "type"
-                                }
-                            ]
-                        }
-                    }
-                },
-                "status": 200
-            }
-        },
-        {
-            "description": "un nuevo nombre para un item inexistente",
-            "providerStates": [
-                {
-                    "name": "item no existe",
-                    "params": {
-                        "id": "4d5e6f70-8192-a3b4-c5d6-e7f8a9b0c1d2"
-                    }
-                }
-            ],
-            "request": {
-                "body": {
-                    "name": "itemActualizado"
-                },
-                "headers": {
-                    "Content-Type": "application/json"
-                },
-                "method": "PUT",
-                "path": "/api/Item/4d5e6f70-8192-a3b4-c5d6-e7f8a9b0c1d2"
-            },
-            "response": {
-                "body": "Item with id 4d5e6f70-8192-a3b4-c5d6-e7f8a9b0c1d2 not found",
-                "headers": {
-                    "Content-Type": "text/plain; charset=utf-8"
-                },
-                "status": 404
-            }
-        },
-        {
-            "description": "una solicitud para eliminar un item existente",
-            "providerStates": [
-                {
-                    "name": "eliminar item",
-                    "params": {
-                        "id": "2b3c4d5e-6f70-8192-a3b4-c5d6e7f8a9b0"
-                    }
-                }
-            ],
-            "request": {
-                "method": "DELETE",
-                "path": "/api/Item/2b3c4d5e-6f70-8192-a3b4-c5d6e7f8a9b0"
-            },
-            "response": {
-                "body": {
-                    "value": true
-                },
-                "headers": {
-                    "Content-Type": "application/json"
-                },
-                "matchingRules": {
-                    "body": {
-                        "$.value": {
-                            "combine": "AND",
-                            "matchers": [
-                                {
-                                    "match": "type"
-                                }
-                            ]
-                        }
-                    }
-                },
-                "status": 200
-            }
+          "name": "realizar una consulta de items"
         }
-    ],
-    "metadata": {
-        "pact-js": {
-            "version": "17.1.3"
+      ],
+      "request": {
+        "method": "GET",
+        "path": "/api/Item"
+      },
+      "response": {
+        "body": {
+          "value": [
+            {
+              "available": 8,
+              "id": "0c7a4eee-ab9c-4431-8de7-beb6559e5c4e",
+              "itemName": "item1",
+              "reserved": 2,
+              "stock": 10,
+              "unitaryCost": 12.5
+            }
+          ]
         },
-        "pactRust": {
-            "ffi": "0.5.6",
-            "models": "1.3.14"
+        "headers": {
+          "Content-Type": "application/json"
         },
-        "pactSpecification": {
-            "version": "3.0.0"
-        }
+        "matchingRules": {
+          "body": {
+            "$.value": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type",
+                  "min": 1
+                }
+              ]
+            },
+            "$.value[*].available": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "integer"
+                }
+              ]
+            },
+            "$.value[*].id": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "regex",
+                  "regex": "[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}"
+                }
+              ]
+            },
+            "$.value[*].itemName": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            },
+            "$.value[*].reserved": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "integer"
+                }
+              ]
+            },
+            "$.value[*].stock": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "integer"
+                }
+              ]
+            },
+            "$.value[*].unitaryCost": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            }
+          }
+        },
+        "status": 200
+      }
     },
-    "provider": {
-        "name": "inventory-service"
+    {
+      "description": "datos para agregar stock a un item existente",
+      "providerStates": [
+        {
+          "name": "agregar stock a un item",
+          "params": {
+            "id": "3c4d5e6f-7081-92a3-b4c5-d6e7f8a9b0c1"
+          }
+        }
+      ],
+      "request": {
+        "body": {
+          "quantity": 5,
+          "unitaryCost": 10.5,
+          "userCreatorId": "4d5e6f70-8192-a3b4-c5d6-e7f8a9b0c1d2"
+        },
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "method": "POST",
+        "path": "/api/Item/3c4d5e6f-7081-92a3-b4c5-d6e7f8a9b0c1/stock"
+      },
+      "response": {
+        "body": {
+          "value": "5e6f7081-92a3-b4c5-d6e7-f8a9b0c1d2e3"
+        },
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "matchingRules": {
+          "body": {
+            "$.value": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "regex",
+                  "regex": "[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}"
+                }
+              ]
+            }
+          }
+        },
+        "status": 200
+      }
+    },
+    {
+      "description": "datos para crear un item",
+      "providerStates": [
+        {
+          "name": "crear item",
+          "params": {
+            "id": "1a2b3c4d-5678-90ab-cdef-1234567890ab"
+          }
+        }
+      ],
+      "request": {
+        "body": {
+          "id": "1a2b3c4d-5678-90ab-cdef-1234567890ab",
+          "itemName": "nuevoItem"
+        },
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "method": "POST",
+        "path": "/api/Item"
+      },
+      "response": {
+        "body": {
+          "value": "1a2b3c4d-5678-90ab-cdef-1234567890ab"
+        },
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "matchingRules": {
+          "body": {
+            "$.value": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "regex",
+                  "regex": "[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}"
+                }
+              ]
+            }
+          }
+        },
+        "status": 200
+      }
+    },
+    {
+      "description": "un nombre vacío para un item existente",
+      "providerStates": [
+        {
+          "name": "actualizar item",
+          "params": {
+            "id": "3c4d5e6f-7081-92a3-b4c5-d6e7f8a9b0c1"
+          }
+        }
+      ],
+      "request": {
+        "body": {
+          "name": ""
+        },
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "method": "PUT",
+        "path": "/api/Item/3c4d5e6f-7081-92a3-b4c5-d6e7f8a9b0c1"
+      },
+      "response": {
+        "body": {
+          "code": "NameIsRequired",
+          "description": "The item name is required",
+          "type": 2
+        },
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "matchingRules": {
+          "body": {
+            "$.code": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            },
+            "$.description": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            },
+            "$.type": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "integer"
+                }
+              ]
+            }
+          }
+        },
+        "status": 400
+      }
+    },
+    {
+      "description": "un nuevo nombre para un item existente",
+      "providerStates": [
+        {
+          "name": "actualizar item",
+          "params": {
+            "id": "3c4d5e6f-7081-92a3-b4c5-d6e7f8a9b0c1"
+          }
+        }
+      ],
+      "request": {
+        "body": {
+          "name": "itemActualizado"
+        },
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "method": "PUT",
+        "path": "/api/Item/3c4d5e6f-7081-92a3-b4c5-d6e7f8a9b0c1"
+      },
+      "response": {
+        "body": {
+          "value": true
+        },
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "matchingRules": {
+          "body": {
+            "$.value": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            }
+          }
+        },
+        "status": 200
+      }
+    },
+    {
+      "description": "un nuevo nombre para un item inexistente",
+      "providerStates": [
+        {
+          "name": "item no existe",
+          "params": {
+            "id": "4d5e6f70-8192-a3b4-c5d6-e7f8a9b0c1d2"
+          }
+        }
+      ],
+      "request": {
+        "body": {
+          "name": "itemActualizado"
+        },
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "method": "PUT",
+        "path": "/api/Item/4d5e6f70-8192-a3b4-c5d6-e7f8a9b0c1d2"
+      },
+      "response": {
+        "body": "Item with id 4d5e6f70-8192-a3b4-c5d6-e7f8a9b0c1d2 not found",
+        "headers": {
+          "Content-Type": "text/plain; charset=utf-8"
+        },
+        "status": 404
+      }
+    },
+    {
+      "description": "una solicitud para eliminar un item existente",
+      "providerStates": [
+        {
+          "name": "eliminar item",
+          "params": {
+            "id": "2b3c4d5e-6f70-8192-a3b4-c5d6e7f8a9b0"
+          }
+        }
+      ],
+      "request": {
+        "method": "DELETE",
+        "path": "/api/Item/2b3c4d5e-6f70-8192-a3b4-c5d6e7f8a9b0"
+      },
+      "response": {
+        "body": {
+          "value": true
+        },
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "matchingRules": {
+          "body": {
+            "$.value": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            }
+          }
+        },
+        "status": 200
+      }
     }
+  ],
+  "metadata": {
+    "pact-js": {
+      "version": "17.1.3"
+    },
+    "pactRust": {
+      "ffi": "0.5.6",
+      "models": "1.3.14"
+    },
+    "pactSpecification": {
+      "version": "3.0.0"
+    }
+  },
+  "provider": {
+    "name": "inventory-service"
+  }
 }
