@@ -6,6 +6,9 @@ import { getErrorMessage } from './utils/getErrorMessage';
 // Every close path (Escape, Cancel, success) goes through the native `close` event, so the form
 // is reset in one place and the parent is told the dialog is gone. There is no backdrop-click
 // close: a click listener on the non-interactive <dialog> breaks code rules JS-5 and JS-6.
+// Each submission is tagged with an id; closing the dialog invalidates it, so a request that
+// resolves after the user closed (or reopened the dialog for another item) never touches the
+// new session's state.
 const AddStockDialog = ({ item, onClose, onStockAdded }) => {
     const dialogRef = useRef(null);
     const quantityRef = useRef(null);
@@ -14,6 +17,7 @@ const AddStockDialog = ({ item, onClose, onStockAdded }) => {
     const [userCreatorId, setUserCreatorId] = useState('');
     const [error, setError] = useState(null);
     const [submitting, setSubmitting] = useState(false);
+    const submissionIdRef = useRef(0);
 
     useEffect(() => {
         const dialog = dialogRef.current;
@@ -37,6 +41,8 @@ const AddStockDialog = ({ item, onClose, onStockAdded }) => {
         setUnitaryCost('');
         setUserCreatorId('');
         setError(null);
+        setSubmitting(false);
+        submissionIdRef.current += 1;
         onClose();
     };
 
@@ -44,6 +50,9 @@ const AddStockDialog = ({ item, onClose, onStockAdded }) => {
         event.preventDefault();
         setError(null);
         setSubmitting(true);
+        submissionIdRef.current += 1;
+        const submissionId = submissionIdRef.current;
+        const isCurrent = () => submissionIdRef.current === submissionId;
         ItemService()
             .addStock(item.id, {
                 userCreatorId,
@@ -51,17 +60,21 @@ const AddStockDialog = ({ item, onClose, onStockAdded }) => {
                 unitaryCost: Number(unitaryCost),
             })
             .then(() => {
-                closeDialog();
+                // The stock was added even if the user closed the dialog meanwhile: refresh anyway.
+                if (isCurrent()) {
+                    closeDialog();
+                }
                 onStockAdded();
             })
             .catch((err) => {
-                // Ignore failures that arrive after the user already closed the dialog.
-                if (dialogRef.current?.open) {
+                if (isCurrent()) {
                     setError(getErrorMessage(err, 'Stock could not be added'));
                 }
             })
             .finally(() => {
-                setSubmitting(false);
+                if (isCurrent()) {
+                    setSubmitting(false);
+                }
             });
     };
 

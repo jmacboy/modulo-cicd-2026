@@ -11,6 +11,7 @@ const MESSAGES_BY_CODE = {
     NonNegativeStock: 'The quantity must be greater than zero.',
     NonNegativeCost: 'The unitary cost cannot be negative.',
     CreatorIsRequired: 'Enter the user ID that adds the stock.',
+    CreatorNotFound: 'The user ID does not exist. Check it and try again.',
     InsuficentStockToReserve: 'There is not enough available stock.',
     InsuficentStockToSubstract: 'There is not enough reserved stock.',
 };
@@ -22,10 +23,13 @@ const MESSAGES_BY_STATUS = {
 /**
  * Maps an axios error from the inventory API to a client-owned, user-facing message.
  * The API returns an `Error` object (`code`) for 400 and a plain string for 404; neither text
- * reaches the UI. Unknown errors fall back to the action-specific message.
+ * reaches the UI. Unknown errors fall back to the action-specific message. Only own keys are
+ * looked up, so a code such as `constructor` cannot resolve to an inherited `Object` member.
  */
+const ownMessage = (messages, key) => (Object.hasOwn(messages, key) ? messages[key] : undefined);
+
 export const getErrorMessage = (error, fallback) => {
     const code = error?.response?.data?.code;
     const status = error?.response?.status;
-    return MESSAGES_BY_CODE[code] ?? MESSAGES_BY_STATUS[status] ?? fallback;
+    return ownMessage(MESSAGES_BY_CODE, code) ?? ownMessage(MESSAGES_BY_STATUS, status) ?? fallback;
 };
