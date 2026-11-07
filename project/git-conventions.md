@@ -39,6 +39,12 @@
 | `body-max-line-length`, `footer-max-line-length` | Body and footer lines are at most 100 characters |
 | `body-leading-blank`, `footer-leading-blank` | Blank line before body and footer (warning only) |
 
+- commitlint's default ignore list is off (`defaultIgnores: false`), so messages like `1.0.0`,
+  `Merge branch ...`, or `Revert arbitrary text` are validated and rejected. Only two git-generated
+  formats are exempt:
+  - `fixup!`, `squash!`, `amend!` commits, consumed by `git rebase --autosquash`;
+  - the message `git revert` writes: `Revert "<subject>"` (or `Reapply "<subject>"`) followed by
+    `This reverts commit <sha>.`
 - Check a message before committing: `echo "feat(item): add filter" | npx commitlint`.
 - History also contains free-form Spanish messages (`agregado item service`); new commits use
   Conventional Commits.
