@@ -19,6 +19,9 @@ public static class ItemErrors
     public static Error NonNegativeStock() =>
         new Error("NonNegativeStock", "The value for cannot be negative", ErrorType.Validation);
 
+    public static Error NonNegativeCost() =>
+        new Error("NonNegativeCost", "The unitary cost cannot be negative", ErrorType.Validation);
+
     public static Error CostStrategyNotProvided() =>
         new Error("CostStrategyNotProvided", "A cost strategy must be provided to calculate the new unitary cost",
             ErrorType.Validation);
