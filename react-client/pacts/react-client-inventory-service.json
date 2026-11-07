@@ -140,6 +140,136 @@
             }
         },
         {
+            "description": "un nombre vacío para un item existente",
+            "providerStates": [
+                {
+                    "name": "actualizar item",
+                    "params": {
+                        "id": "3c4d5e6f-7081-92a3-b4c5-d6e7f8a9b0c1"
+                    }
+                }
+            ],
+            "request": {
+                "body": {
+                    "name": ""
+                },
+                "headers": {
+                    "Content-Type": "application/json"
+                },
+                "method": "PUT",
+                "path": "/api/Item/3c4d5e6f-7081-92a3-b4c5-d6e7f8a9b0c1"
+            },
+            "response": {
+                "body": {
+                    "code": "NameIsRequired",
+                    "description": "The item name is required",
+                    "type": 2
+                },
+                "headers": {
+                    "Content-Type": "application/json"
+                },
+                "matchingRules": {
+                    "body": {
+                        "$.code": {
+                            "combine": "AND",
+                            "matchers": [
+                                {
+                                    "match": "type"
+                                }
+                            ]
+                        },
+                        "$.description": {
+                            "combine": "AND",
+                            "matchers": [
+                                {
+                                    "match": "type"
+                                }
+                            ]
+                        },
+                        "$.type": {
+                            "combine": "AND",
+                            "matchers": [
+                                {
+                                    "match": "integer"
+                                }
+                            ]
+                        }
+                    }
+                },
+                "status": 400
+            }
+        },
+        {
+            "description": "un nuevo nombre para un item existente",
+            "providerStates": [
+                {
+                    "name": "actualizar item",
+                    "params": {
+                        "id": "3c4d5e6f-7081-92a3-b4c5-d6e7f8a9b0c1"
+                    }
+                }
+            ],
+            "request": {
+                "body": {
+                    "name": "itemActualizado"
+                },
+                "headers": {
+                    "Content-Type": "application/json"
+                },
+                "method": "PUT",
+                "path": "/api/Item/3c4d5e6f-7081-92a3-b4c5-d6e7f8a9b0c1"
+            },
+            "response": {
+                "body": {
+                    "value": true
+                },
+                "headers": {
+                    "Content-Type": "application/json"
+                },
+                "matchingRules": {
+                    "body": {
+                        "$.value": {
+                            "combine": "AND",
+                            "matchers": [
+                                {
+                                    "match": "type"
+                                }
+                            ]
+                        }
+                    }
+                },
+                "status": 200
+            }
+        },
+        {
+            "description": "un nuevo nombre para un item inexistente",
+            "providerStates": [
+                {
+                    "name": "item no existe",
+                    "params": {
+                        "id": "4d5e6f70-8192-a3b4-c5d6-e7f8a9b0c1d2"
+                    }
+                }
+            ],
+            "request": {
+                "body": {
+                    "name": "itemActualizado"
+                },
+                "headers": {
+                    "Content-Type": "application/json"
+                },
+                "method": "PUT",
+                "path": "/api/Item/4d5e6f70-8192-a3b4-c5d6-e7f8a9b0c1d2"
+            },
+            "response": {
+                "body": "Item with id 4d5e6f70-8192-a3b4-c5d6-e7f8a9b0c1d2 not found",
+                "headers": {
+                    "Content-Type": "text/plain; charset=utf-8"
+                },
+                "status": 404
+            }
+        },
+        {
             "description": "una solicitud para eliminar un item existente",
             "providerStates": [
                 {

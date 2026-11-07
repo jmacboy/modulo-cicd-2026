@@ -29,6 +29,11 @@
   Conventional Commits.
 - Keep tests and docs in the same commit as the behavior they cover.
 - AI agents commit only when asked.
+- **Before every push, scan the branch's changed files (`origin/main...HEAD`) against
+  [code-rules.md](code-rules.md).** AI agents run the `code-rules-check` skill
+  (`.claude/skills/code-rules-check/SKILL.md`): fixed violations are staged and committed as
+  `fix(<scope>): apply code rules <IDs>`, and the push happens only on `PASS`. Humans review their
+  branch diff against the same rules. The Husky hooks still run.
 
 ---
 

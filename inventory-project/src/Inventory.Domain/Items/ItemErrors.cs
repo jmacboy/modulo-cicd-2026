@@ -31,4 +31,7 @@ public static class ItemErrors
     public static Error CannotDeleteWithReservedStock(int reservedStock) =>
         new Error("CannotDeleteWithReservedStock", "The item has {reservedStock} reserved units and cannot be deleted",
             ErrorType.Validation, reservedStock);
+
+    public static Error CannotUpdateDeletedItem() =>
+        new Error("CannotUpdateDeletedItem", "The item has been deleted and cannot be updated", ErrorType.Validation);
 }

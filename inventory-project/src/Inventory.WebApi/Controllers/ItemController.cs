@@ -1,6 +1,7 @@
 ﻿using Inventory.Application.Items.CreateItem;
 using Inventory.Application.Items.DeleteItem;
 using Inventory.Application.Items.GetItems;
+using Inventory.Application.Items.UpdateItem;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -58,4 +59,22 @@ public class ItemController : ControllerBase
 
         return Ok(result);
     }
+
+    [HttpPut("{id}")]
+    public async Task<IActionResult> UpdateItem(Guid id, [FromBody] UpdateItemRequest request)
+    {
+        var command = new UpdateItemCommand(id, request.Name);
+        var result = await _mediator.Send(command);
+
+        if (result.IsFailure)
+        {
+            return result.Error.Type == Joseco.DDD.Core.Results.ErrorType.NotFound ?
+                            NotFound(result.Error.Description) :
+                            BadRequest(result.Error);
+        }
+
+        return Ok(result);
+    }
 }
+
+public record UpdateItemRequest(string Name);

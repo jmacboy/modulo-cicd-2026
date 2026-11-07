@@ -8,6 +8,13 @@ import {
     responseItemList,
     itemIdToDelete,
     eliminarItemResponse,
+    itemIdToUpdate,
+    unknownItemIdToUpdate,
+    actualizarItemRequestBody,
+    actualizarItemNombreVacioRequestBody,
+    actualizarItemResponse,
+    actualizarItemNoEncontradoResponse,
+    actualizarItemNombreRequeridoResponse,
 } from './PactResponses.js';
 
 describe('El API de Items', () => {
@@ -124,6 +131,121 @@ describe('El API de Items', () => {
                     expect(response).to.have.all.keys('value');
                     expect(response.value).to.be.a('boolean');
                 });
+            });
+        });
+    });
+    describe('Actualizar un item', () => {
+        it('confirma la actualización del nombre de un item existente', () => {
+            //Arrange
+            provider
+                .given('actualizar item', { id: itemIdToUpdate })
+                .uponReceiving('un nuevo nombre para un item existente')
+                .withRequest({
+                    method: 'PUT',
+                    path: `/api/Item/${itemIdToUpdate}`,
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: actualizarItemRequestBody,
+                })
+                .willRespondWith({
+                    status: 200,
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: actualizarItemResponse,
+                });
+            return provider.executeTest(async (mockServer) => {
+                // Act
+                itemService = ItemService(mockServer.url);
+                return itemService
+                    .updateItem(itemIdToUpdate, actualizarItemRequestBody)
+                    .then((response) => {
+                        // Assert — igual que en la eliminación: el pacto promete un campo "value"
+                        // booleano con el resultado, no que ese valor sea `true`.
+                        expect(response).to.have.all.keys('value');
+                        expect(response.value).to.be.a('boolean');
+                    });
+            });
+        });
+        it('informa que el item a actualizar no existe', () => {
+            //Arrange
+            provider
+                .given('item no existe', { id: unknownItemIdToUpdate })
+                .uponReceiving('un nuevo nombre para un item inexistente')
+                .withRequest({
+                    method: 'PUT',
+                    path: `/api/Item/${unknownItemIdToUpdate}`,
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: actualizarItemRequestBody,
+                })
+                .willRespondWith({
+                    status: 404,
+                    headers: {
+                        'Content-Type': 'text/plain; charset=utf-8',
+                    },
+                    body: actualizarItemNoEncontradoResponse,
+                });
+            return provider.executeTest(async (mockServer) => {
+                // Act
+                itemService = ItemService(mockServer.url);
+                return itemService
+                    .updateItem(unknownItemIdToUpdate, actualizarItemRequestBody)
+                    .then(
+                        () => {
+                            throw new Error('Se esperaba que la actualización fuera rechazada');
+                        },
+                        (error) => {
+                            // Assert — el cliente muestra el body tal cual cuando es texto plano, así
+                            // que el pacto solo promete un 404 con un mensaje string; el texto exacto
+                            // lo decide el proveedor.
+                            expect(error.response.status).to.equal(404);
+                            expect(error.response.data).to.be.a('string');
+                        },
+                    );
+            });
+        });
+        it('rechaza la actualización cuando el nombre está vacío', () => {
+            //Arrange
+            provider
+                .given('actualizar item', { id: itemIdToUpdate })
+                .uponReceiving('un nombre vacío para un item existente')
+                .withRequest({
+                    method: 'PUT',
+                    path: `/api/Item/${itemIdToUpdate}`,
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: actualizarItemNombreVacioRequestBody,
+                })
+                .willRespondWith({
+                    status: 400,
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: actualizarItemNombreRequeridoResponse,
+                });
+            return provider.executeTest(async (mockServer) => {
+                // Act
+                itemService = ItemService(mockServer.url);
+                return itemService
+                    .updateItem(itemIdToUpdate, actualizarItemNombreVacioRequestBody)
+                    .then(
+                        () => {
+                            throw new Error('Se esperaba que la actualización fuera rechazada');
+                        },
+                        (error) => {
+                            // Assert — el cliente lee "description" del Error serializado; se
+                            // afirma la forma del error, no su texto ni el valor numérico de
+                            // "type", que decide el proveedor.
+                            expect(error.response.status).to.equal(400);
+                            expect(error.response.data.code).to.be.a('string');
+                            expect(error.response.data.description).to.be.a('string');
+                            expect(error.response.data.type).to.be.a('number');
+                        },
+                    );
             });
         });
     });

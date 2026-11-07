@@ -46,5 +46,21 @@ export const ItemService = (baseUrl = 'https://localhost:7297') => {
                     });
             });
         },
+        updateItem: (id, item) => {
+            return new Promise((resolve, reject) => {
+                axios
+                    .put(`${baseUrl}/api/Item/${id}`, item, {
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                    })
+                    .then((response) => {
+                        resolve(response.data);
+                    })
+                    .catch((error) => {
+                        reject(error);
+                    });
+            });
+        },
     };
 };
