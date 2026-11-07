@@ -31,6 +31,7 @@
 |---|---|
 | `type-enum` | Type is one of `build`, `chore`, `ci`, `docs`, `feat`, `fix`, `perf`, `refactor`, `revert`, `style`, `test` |
 | `type-case`, `type-empty` | Type is required and lower-case |
+| `scope-empty` | Scope is required (`feat(item): ...`, not `feat: ...`); project rule added in `commitlint.config.js` |
 | `subject-empty` | Summary is required |
 | `subject-case` | Summary does not start in Sentence case, Start Case, PascalCase, or UPPER CASE (write `add item filter`, not `Add item filter`) |
 | `subject-full-stop` | Summary does not end with `.` |
@@ -45,6 +46,9 @@
   - `fixup!`, `squash!`, `amend!` commits, consumed by `git rebase --autosquash`;
   - the message `git revert` writes: `Revert "<subject>"` (or `Reapply "<subject>"`) followed by
     `This reverts commit <sha>.`
+- `git revert --reference` leaves the title for you to write, so give it a conventional title such
+  as `revert(item): drop filter that broke the list`; a revert left with only Git's placeholder
+  title is rejected.
 - Check a message before committing: `echo "feat(item): add filter" | npx commitlint`.
 - History also contains free-form Spanish messages (`agregado item service`); new commits use
   Conventional Commits.

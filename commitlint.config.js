@@ -9,5 +9,9 @@ const allowedGitMessages = [
 export default {
     extends: ['@commitlint/config-conventional'],
     defaultIgnores: false,
+    rules: {
+        // project/git-conventions.md requires `<type>(<scope>): <summary>`.
+        'scope-empty': [2, 'never'],
+    },
     ignores: allowedGitMessages.map((pattern) => (message) => pattern.test(message)),
 };
