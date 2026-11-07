@@ -1,4 +1,5 @@
 using Inventory.Infrastructure;
+using Inventory.WebApi.ExceptionHandling;
 using Inventory.WebApi.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -21,8 +22,13 @@ builder.Services.AddInfrastructure(builder.Configuration);
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
+builder.Services.AddProblemDetails();
 
 var app = builder.Build();
+
+// First middleware: replaces the automatic Developer Exception Page so internal error details never reach clients.
+app.UseExceptionHandler();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

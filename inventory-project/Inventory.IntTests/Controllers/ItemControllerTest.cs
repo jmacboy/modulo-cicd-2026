@@ -73,6 +73,42 @@ namespace Inventory.IntTests.Controllers
         }
 
         [Fact]
+        public async Task CreateItem_WithDuplicateRequest_ReturnsGenericProblemDetails()
+        {
+            //Arrange
+            var client = _factory.CreateClient();
+            var itemGuid = Guid.NewGuid();
+            await client.PostAsJsonAsync("/api/Item", new { Id = itemGuid, ItemName = "Test Item" });
+
+            var request = new HttpRequestMessage(HttpMethod.Post, "/api/Item")
+            {
+                Content = JsonContent.Create(new { Id = itemGuid, ItemName = "Name" })
+            };
+            request.Headers.Add("Origin", "http://localhost:5173");
+
+            //Act
+            var response = await client.SendAsync(request);
+
+            //Assert
+            Assert.Equal(HttpStatusCode.InternalServerError, response.StatusCode);
+            Assert.Equal("application/problem+json", response.Content.Headers.ContentType?.MediaType);
+            Assert.True(response.Headers.TryGetValues("Access-Control-Allow-Origin", out var allowedOrigins));
+            Assert.Contains("http://localhost:5173", allowedOrigins);
+
+            var rawBody = await response.Content.ReadAsStringAsync();
+            Assert.DoesNotContain(itemGuid.ToString(), rawBody);
+            Assert.DoesNotContain("Exception", rawBody);
+            Assert.DoesNotContain(" at ", rawBody);
+            Assert.DoesNotContain(".cs:line", rawBody);
+
+            var body = await response.Content.ReadFromJsonAsync<ProblemDetailsResponse>();
+            Assert.NotNull(body);
+            Assert.Equal(500, body.Status);
+            Assert.Equal("An unexpected error occurred.", body.Title);
+            Assert.Null(body.Detail);
+        }
+
+        [Fact]
         public async Task GetItems_WithSeededItem_ReturnsIt()
         {
             //Arrange
