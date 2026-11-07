@@ -6,4 +6,7 @@ public static class TransactionErrors
 {
     public static Error CreatorIsRequired() =>
         new Error("CreatorIsRequired", "The user creator id is required", ErrorType.Validation);
+
+    public static Error CreatorNotFound() =>
+        new Error("CreatorNotFound", "The user creator does not exist", ErrorType.Validation);
 }

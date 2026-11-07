@@ -82,7 +82,7 @@ public class ItemController : ControllerBase
     public async Task<IActionResult> AddStock(Guid id, [FromBody] AddStockRequest request)
     {
         var command = new AddStockCommand(id, request.UserCreatorId, request.Quantity, request.UnitaryCost);
-        var result = await _mediator.Send(command);
+        var result = await _mediator.Send(command, HttpContext.RequestAborted);
 
         if (result.IsFailure)
         {

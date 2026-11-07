@@ -1,6 +1,7 @@
 using Inventory.Application.Items.AddStock;
 using Inventory.Domain.Items;
 using Inventory.Domain.Transactions;
+using Inventory.Domain.Users;
 using Joseco.DDD.Core.Abstractions;
 using Joseco.DDD.Core.Results;
 using Moq;
@@ -12,6 +13,7 @@ namespace Inventory.Tests.Application.Items.AddStock
         private readonly Mock<IItemRepository> _itemRepositoryMock = new();
         private readonly Mock<ITransactionFactory> _transactionFactoryMock = new();
         private readonly Mock<ITransactionRepository> _transactionRepositoryMock = new();
+        private readonly Mock<IUserRepository> _userRepositoryMock = new();
         private readonly Mock<IUnitOfWork> _unitOfWorkMock = new();
 
         private static Item CreateDefaultItem() => new Item(Guid.NewGuid(), "Widget");
@@ -23,6 +25,7 @@ namespace Inventory.Tests.Application.Items.AddStock
             _itemRepositoryMock.Object,
             _transactionFactoryMock.Object,
             _transactionRepositoryMock.Object,
+            _userRepositoryMock.Object,
             _unitOfWorkMock.Object);
 
         private Transaction ArrangeExistingItem(AddStockCommand command)
@@ -31,6 +34,7 @@ namespace Inventory.Tests.Application.Items.AddStock
             _itemRepositoryMock
                 .Setup(x => x.GetByIdAsync(command.ItemId, It.IsAny<bool>()))
                 .ReturnsAsync(new Item(command.ItemId, "Widget"));
+            ArrangeExistingUser(command.UserCreatorId);
             _transactionFactoryMock
                 .Setup(x => x.CreateEntryTransaction(
                     It.IsAny<Guid>(),
@@ -39,6 +43,13 @@ namespace Inventory.Tests.Application.Items.AddStock
                     It.IsAny<string?>()))
                 .Returns(transaction);
             return transaction;
+        }
+
+        private void ArrangeExistingUser(Guid userId)
+        {
+            _userRepositoryMock
+                .Setup(x => x.GetByIdAsync(userId, It.IsAny<bool>()))
+                .ReturnsAsync(User.Create(userId, "Jane Doe"));
         }
 
         private void VerifyNothingPersisted()
@@ -190,6 +201,30 @@ namespace Inventory.Tests.Application.Items.AddStock
             //Assert
             Assert.False(result.IsSuccess);
             Assert.Equal(TransactionErrors.CreatorIsRequired().Code, result.Error.Code);
+            Assert.Equal(ErrorType.Validation, result.Error.Type);
+            VerifyNothingPersisted();
+        }
+
+        [Fact]
+        public async Task Handle_UnknownUserCreator_ReturnsValidationFailureWithoutCommit()
+        {
+            //Arrange
+            var item = CreateDefaultItem();
+            _itemRepositoryMock
+                .Setup(x => x.GetByIdAsync(item.Id, It.IsAny<bool>()))
+                .ReturnsAsync(item);
+            _userRepositoryMock
+                .Setup(x => x.GetByIdAsync(It.IsAny<Guid>(), It.IsAny<bool>()))
+                .ReturnsAsync((User?)null);
+            var handler = CreateHandler();
+            var command = new AddStockCommand(item.Id, Guid.NewGuid(), 10, 5.5m);
+
+            //Act
+            var result = await handler.Handle(command, CancellationToken.None);
+
+            //Assert
+            Assert.False(result.IsSuccess);
+            Assert.Equal(TransactionErrors.CreatorNotFound().Code, result.Error.Code);
             Assert.Equal(ErrorType.Validation, result.Error.Type);
             VerifyNothingPersisted();
         }

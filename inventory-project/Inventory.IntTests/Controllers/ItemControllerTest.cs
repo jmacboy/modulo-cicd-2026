@@ -1,5 +1,6 @@
 ﻿using Inventory.Domain.Items;
 using Inventory.Domain.Transactions;
+using Inventory.Domain.Users;
 using Inventory.Infrastructure.Persistence.PersistenceModel.Entities;
 using Inventory.Infrastructure.Persistence.StoredModel;
 using Inventory.IntTests.Setup;
@@ -253,6 +254,8 @@ namespace Inventory.IntTests.Controllers
             {
                 var itemRepository = scope.ServiceProvider.GetRequiredService<IItemRepository>();
                 await itemRepository.AddAsync(new Item(itemGuid, "Widget"));
+                var userRepository = scope.ServiceProvider.GetRequiredService<IUserRepository>();
+                await userRepository.AddAsync(User.Create(userGuid, "Jane Doe"));
             }
 
             //Act
@@ -308,6 +311,29 @@ namespace Inventory.IntTests.Controllers
 
             //Assert
             Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+        }
+
+        [Fact]
+        public async Task AddStock_WithUnknownCreator()
+        {
+            //Arrange
+            var client = _factory.CreateClient();
+            var itemGuid = Guid.NewGuid();
+            using (var scope = _factory.Services.CreateScope())
+            {
+                var itemRepository = scope.ServiceProvider.GetRequiredService<IItemRepository>();
+                await itemRepository.AddAsync(new Item(itemGuid, "Widget"));
+            }
+
+            //Act
+            var response = await client.PostAsJsonAsync($"/api/Item/{itemGuid}/stock",
+                new { UserCreatorId = Guid.NewGuid(), Quantity = 10, UnitaryCost = 5.5m });
+
+            //Assert
+            Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+            var body = await response.Content.ReadFromJsonAsync<ErrorResponse>();
+            Assert.NotNull(body);
+            Assert.Equal(TransactionErrors.CreatorNotFound().Code, body.Code);
         }
     }
 }

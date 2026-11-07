@@ -1,5 +1,6 @@
 ﻿using Inventory.Domain.Items;
 using Inventory.Domain.Transactions;
+using Inventory.Domain.Users;
 using Inventory.Infrastructure.Persistence.StoredModel;
 using Inventory.WebApi.Controllers;
 using Joseco.DDD.Core.Abstractions;
@@ -38,8 +39,14 @@ namespace Inventory.IntTests.Setup
                 {
                     services.Remove(transactionDescriptor);
                 }
+                var userDescriptor = services.SingleOrDefault(d => d.ServiceType == typeof(IUserRepository));
+                if (userDescriptor != null)
+                {
+                    services.Remove(userDescriptor);
+                }
                 services.AddSingleton<IItemRepository, InMemoryItemRepository>();
                 services.AddSingleton<ITransactionRepository, InMemoryTransactionRepository>();
+                services.AddSingleton<IUserRepository, InMemoryUserRepository>();
                 services.AddSingleton<IUnitOfWork, InMemoryUnitOfWork>();
 
                 // Calling AddDbContext<PersistenceDbContext> again would ADD to, not replace, the
