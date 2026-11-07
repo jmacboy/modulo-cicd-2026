@@ -28,7 +28,7 @@ Items can be created, listed, and soft-deleted, but a typo in the name can only 
 - [x] T2 Backend tests (unit + integration) — route: delegated (general-purpose agent following `test-writer.md`). +3 domain, +3 handler, +3 integration (10 cases with theory). `dotnet test Inventory.Tests`: 30/30 (parent spot check); `Inventory.IntTests`: 7/7. Integration rename test reads back through the fake repo because GET uses the separate EF InMemory `PersistenceDbContext`.
 - [x] T3 Client: `updateItem` service + inline edit UI — route: delegated (same writer as T1). eslint on changed files OK, `yarn build` OK, prettier OK. Note: full `yarn lint` already fails on `react-client/.claude/hooks/pact-prompt-router.js` (`process` undefined), unrelated.
 - [x] T4 Pact consumer test for `updateItem` — route: delegated (general-purpose agent following `pact-workflow.md`). 3 PUT interactions (200/400/404). `yarn test:pact`: 6 passing (parent spot check). Exception to pact-rules §3: 404 text/plain body is a literal because PactV3 serializes `like()` on non-JSON bodies.
-- [ ] T5 Full verification + work-unit commits — verification done (unit 30/30, integration 7/7, pact 6/6, build 0 errors); commits pending user approval (AGENTS.md: commit only when asked)
+- [x] T5 Full verification + work-unit commits. Commits: `e01a3e2` feat(item), `e54a1f6` feat(client), `a97cf99` docs(project). Native review: assessed high, consent declined by user (candidate-scoped). code-rules-check: PASS (JS-1..JS-4, 6 files). Pre-push hook: unit 30/30. Pushed `feat/item-update` to origin (2026-11-07).
 
 - [x] T6 (user request) Repo-wide `project/code-rules.md` with rule JS-1 (SonarQube `javascript:S9383`, handle every promise), indexed in `project/README.md`; fixed `ItemList.jsx` `getItemList()` missing `.catch` — route: inline (1 doc + 1 mechanical edit). prettier/eslint/`yarn build` OK.
 - [x] T7 (user request) Fixed `App.jsx` `addItem` missing `.catch` (JS-1, shows `role="alert"` error); extracted shared `src/utils/getErrorMessage.js` used by `App.jsx` and `ItemList.jsx`. Added rule JS-2 (SonarQube `javascript:S6582`, optional chaining) and fixed `ItemList.jsx` `itemList && itemList.map` → `itemList?.map`. eslint/prettier/`yarn build` OK, `yarn test:pact` 6 passing. No other `a && a.b` guards in `src/`.
@@ -46,4 +46,4 @@ Strategy: `ask-on-risk`. Forecast: ~300 authored changed lines (single PR).
 - Contract: `PUT /api/Item/{id}` body `{ "name" }` → 200 `Result<bool>`; 400 `Error` (`NameIsRequired`, `CannotUpdateDeletedItem`); 404 string when unknown or soft-deleted (global query filter in `ItemConfig` applies to `FindAsync`).
 
 ## Next step
-T2, then T4.
+Open a PR to `main` (human decision), merge by squash/rebase, then remove the worktree.
