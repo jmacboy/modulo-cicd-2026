@@ -24,7 +24,8 @@ internal class GetItemsHandler : IRequestHandler<GetItemsQuery, Result<ICollecti
                 ItemName = i.ItemName,
                 Available = i.Available,
                 Reserved = i.Reserverd,
-                Stock = i.Stock
+                Stock = i.Stock,
+                UnitaryCost = i.UnitaryCost
             }).
             ToListAsync(cancellationToken);
     }
