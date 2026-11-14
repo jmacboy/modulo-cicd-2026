@@ -1,0 +1,7 @@
+node_modules/
+dist/
+coverage/
+pacts/
+.claude/
+.atl/
+*.log
