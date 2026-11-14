@@ -1,8 +1,9 @@
 # Single CI pipeline for the repository.
 # 1. frontend: lints, builds, and unit-tests react-client (with coverage), then runs the Pact
 #    consumer tests. Uploads the LCOV report (consumed by the backend job) and the HTML report.
-# 2. backend: builds and tests the .NET service with coverage and runs one SonarCloud analysis
-#    that includes both the .NET (OpenCover) and the React (LCOV) coverage.
+# 2. backend: builds the .NET service, runs the unit tests with coverage and the integration
+#    tests without coverage, and runs one SonarCloud analysis that includes both the .NET
+#    unit-test (OpenCover) and the React (LCOV) coverage.
 
 name: CI
 
@@ -108,17 +109,22 @@ jobs:
         /d:sonar.cs.opencover.reportsPaths="coverage/**/coverage.opencover.xml"
         /d:sonar.javascript.lcov.reportPaths="coverage/frontend/lcov.info"
         /d:sonar.coverage.exclusions="**Tests*/**,react-client/src/tests/**,**/*.test.js,**/*.test.jsx,react-client/src/main.jsx,react-client/*.config.js,react-client/vitest.setup.js"
-        /d:sonar.exclusions="**/Migrations/**,**/obj/**,**/bin/**,**/node_modules/**,**/dist/**,**/coverage/**,react-client/pacts/**"
+        /d:sonar.exclusions="**/Migrations/**,**/obj/**,**/bin/**,**/node_modules/**,**/dist/**,**/coverage/**,react-client/pacts/**,**/.claude/**,.atl/**,.codegraph/**,.config/**,.husky/**,**/.github/**,odd/**,**/project/**,**/coveragereport/**,**/CoverageHistory/**,**/TestResults/**,commitlint.config.js,**/.lintstagedrc.*"
         /d:sonar.qualitygate.wait=true
     - name: Build
       run: dotnet build inventory-project/Inventory.sln --no-restore
-    - name: Test
+    - name: Unit tests with coverage
       run: >
-          dotnet test inventory-project/Inventory.sln --no-build
+          dotnet test inventory-project/Inventory.Tests/Inventory.Tests.csproj --no-build
           --verbosity normal
           --collect:"XPlat Code Coverage"
           --results-directory ./coverage/backend
           -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.Format=opencover,cobertura
+    # Integration tests still gate the build but are kept out of the coverage report.
+    - name: Integration tests
+      run: >
+          dotnet test inventory-project/Inventory.IntTests/Inventory.IntTests.csproj --no-build
+          --verbosity normal
     - name: Sonar — End
       env:
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
