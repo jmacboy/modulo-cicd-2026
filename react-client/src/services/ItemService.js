@@ -1,5 +1,5 @@
 import axios from 'axios';
-export const ItemService = (baseUrl = 'https://localhost:7297') => {
+export const ItemService = (baseUrl = import.meta.env.VITE_API_URL ?? 'https://localhost:7297') => {
     return {
         getItemList: () => {
             return new Promise((resolve, reject) => {

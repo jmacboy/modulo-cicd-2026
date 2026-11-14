@@ -28,6 +28,16 @@ describe('ItemService', () => {
         expect(axios.delete).toHaveBeenCalledWith('https://localhost:7297/api/Item/abc');
     });
 
+    it('uses VITE_API_URL as the default base URL when it is set', async () => {
+        vi.stubEnv('VITE_API_URL', 'http://api.from.env');
+        axios.delete.mockResolvedValue({ data: {} });
+
+        await ItemService().deleteItem('abc');
+
+        expect(axios.delete).toHaveBeenCalledWith('http://api.from.env/api/Item/abc');
+        vi.unstubAllEnvs();
+    });
+
     describe('getItemList', () => {
         it('resolves with the items inside the result value', async () => {
             const items = [{ id: '1', itemName: 'Pen' }];
