@@ -38,14 +38,14 @@ jobs:
     - run: yarn lint
     - run: yarn build
     - name: Unit tests with coverage
-      run: yarn test:coverage
+      run: yarn test:coverage --coverage.reportsDirectory=../coverage/frontend
     - name: Pact consumer tests
       run: yarn test:pact
     - name: Upload frontend LCOV report
       uses: actions/upload-artifact@v4
       with:
         name: frontend-coverage-lcov
-        path: react-client/coverage/lcov.info
+        path: coverage/frontend/lcov.info
         retention-days: 7
         if-no-files-found: error
     - name: Upload frontend coverage report
@@ -53,8 +53,8 @@ jobs:
       with:
         name: frontend-coverage-report
         path: |
-          react-client/coverage
-          !react-client/coverage/lcov.info
+          coverage/frontend
+          !coverage/frontend/lcov.info
         retention-days: 7
         if-no-files-found: error
 
@@ -90,12 +90,12 @@ jobs:
       uses: actions/download-artifact@v4
       with:
         name: frontend-coverage-lcov
-        path: react-client/coverage
+        path: coverage/frontend
     # Vitest writes SF paths relative to react-client/; Sonar resolves them from the repo root.
     - name: Rebase frontend LCOV paths on the repository root
       run: |
-        sed -i -E 's#^SF:src[/\\]#SF:react-client/src/#' react-client/coverage/lcov.info
-        grep -c '^SF:react-client/src/' react-client/coverage/lcov.info
+        sed -i -E 's#^SF:src[/\\]#SF:react-client/src/#' coverage/frontend/lcov.info
+        grep -c '^SF:react-client/src/' coverage/frontend/lcov.info
     - name: Sonar — Begin
       env:
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
@@ -106,7 +106,7 @@ jobs:
         /d:sonar.token="$SONAR_TOKEN"
         /d:sonar.host.url="https://sonarcloud.io"
         /d:sonar.cs.opencover.reportsPaths="coverage/**/coverage.opencover.xml"
-        /d:sonar.javascript.lcov.reportPaths="react-client/coverage/lcov.info"
+        /d:sonar.javascript.lcov.reportPaths="coverage/frontend/lcov.info"
         /d:sonar.coverage.exclusions="**Tests*/**,react-client/src/tests/**,**/*.test.js,**/*.test.jsx,react-client/src/main.jsx,react-client/*.config.js"
         /d:sonar.exclusions="**/Migrations/**,**/obj/**,**/bin/**,**/node_modules/**,**/dist/**,**/coverage/**,react-client/pacts/**"
         /d:sonar.qualitygate.wait=true
