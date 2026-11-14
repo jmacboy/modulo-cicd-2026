@@ -3,11 +3,11 @@ name: Push and deploy
 on:
   push:
     branches: [ "main" ]
+
 jobs:
-
-  build:
-
+  deploy:
     runs-on: ubuntu-latest
+    timeout-minutes: 5
 
     steps:
       - name: Configure SSH
@@ -15,14 +15,11 @@ jobs:
           mkdir -p ~/.ssh
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_ed25519
           chmod 600 ~/.ssh/id_ed25519
-          ssh-keyscan -H ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts
+          ssh-keyscan -H "${{ secrets.SSH_HOST }}" >> ~/.ssh/known_hosts
 
-      - name: Reload server
-        uses: appleboy/ssh-action@v1
-        with:
-          host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USER }}
-          timeout: 2m 
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          script: |
-            bash /home/deployer/cicd-example/modulo-cicd-2026/deploy.sh
+      - name: Deploy
+        run: |
+          ssh -i ~/.ssh/id_ed25519 \
+            -o ConnectTimeout=30 \
+            "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}" \
+            'bash /home/deployer/cicd-example/modulo-cicd-2026/deploy.sh'
