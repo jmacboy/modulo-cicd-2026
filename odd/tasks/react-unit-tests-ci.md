@@ -26,7 +26,7 @@ reuse the frontend LCOV report.
 
 - [x] T1 Vitest setup + unit tests for `getErrorMessage`, `ItemService`, `App`, `ItemList`,
       `AddStockDialog`; `yarn test` / `yarn test:coverage` scripts.
-- [ ] T2 Unified workflow `.github/workflows/ci.yml`; remove the old two workflows.
+- [x] T2 Unified workflow `.github/workflows/ci.yml`; remove the old two workflows.
 
 ## Acceptance criteria
 
@@ -47,3 +47,19 @@ reuse the frontend LCOV report.
   Branches 100% (38/38), Functions 100% (71/71), Lines 100% (149/149). `yarn test:pact`
   7 passing; `yarn lint` clean; `yarn build` ok.
 - No application code changed.
+- Commit: `475e083`.
+
+### T2 (route: delegated writer)
+
+- `.github/workflows/ci.yml` replaces `dotnet.yml` and `node.js.yml`. Job `frontend` runs lint,
+  build, `test:coverage`, and `test:pact`, then uploads `frontend-coverage-lcov` and
+  `frontend-coverage-report`. Job `backend` (`needs: frontend`) downloads the LCOV, rewrites
+  `SF:src/...` to `SF:react-client/src/...`, and passes it to Sonar via
+  `sonar.javascript.lcov.reportPaths`. It also extends the exclusions and uploads
+  `backend-coverage-report`.
+- Rebased on main after #10 (root `.config/dotnet-tools.json` pins `dotnet-sonarscanner` and
+  `reportgenerator`): `ci.yml` runs `dotnet tool restore` at the repo root before Sonar begin and
+  uses `dotnet sonarscanner` / `dotnet tool run reportgenerator`. The scanner cache and
+  `--tool-path` install are dropped; the Sonar packages cache uses the Linux path `~/.sonar/cache`.
+- Evidence: `npx yaml-lint .github/workflows/ci.yml` succeeded; the SF rewrite was checked on a
+  sample LCOV. The pipeline has not run on GitHub yet.
