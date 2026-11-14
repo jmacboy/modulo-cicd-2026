@@ -1,0 +1,138 @@
+# Single CI pipeline for the repository.
+# 1. frontend: lints, builds, and unit-tests react-client (with coverage), then runs the Pact
+#    consumer tests. Uploads the LCOV report (consumed by the backend job) and the HTML report.
+# 2. backend: builds and tests the .NET service with coverage and runs one SonarCloud analysis
+#    that includes both the .NET (OpenCover) and the React (LCOV) coverage.
+
+name: CI
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+permissions:
+  contents: read
+
+jobs:
+  frontend:
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: react-client
+
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        persist-credentials: false
+    - name: Use Node.js 22
+      uses: actions/setup-node@v4
+      with:
+        node-version: 22
+        cache: 'yarn'
+        cache-dependency-path: react-client/yarn.lock
+    - run: corepack enable
+    - run: yarn install --frozen-lockfile --ignore-scripts
+    - run: yarn lint
+    - run: yarn build
+    - name: Unit tests with coverage
+      run: yarn test:coverage --coverage.reportsDirectory=../coverage/frontend
+    - name: Pact consumer tests
+      run: yarn test:pact
+    - name: Upload frontend LCOV report
+      uses: actions/upload-artifact@v4
+      with:
+        name: frontend-coverage-lcov
+        path: coverage/frontend/lcov.info
+        retention-days: 7
+        if-no-files-found: error
+    - name: Upload frontend coverage report
+      uses: actions/upload-artifact@v4
+      with:
+        name: frontend-coverage-report
+        path: |
+          coverage/frontend
+          !coverage/frontend/lcov.info
+        retention-days: 7
+        if-no-files-found: error
+
+  backend:
+    needs: frontend
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Set up JDK 21
+      uses: actions/setup-java@c1e323688fd81a25caa38c78aa6df2d33d3e20d9 # v4.8.0
+      with:
+        java-version: 21
+        distribution: 'zulu' # Alternative distribution options are available.
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+    - name: Cache SonarQube Cloud packages
+      uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
+      with:
+        path: ~/.sonar/cache
+        key: ${{ runner.os }}-sonar
+        restore-keys: ${{ runner.os }}-sonar
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: 8.0.x
+    # The root manifest (.config/dotnet-tools.json) pins dotnet-sonarscanner and reportgenerator.
+    - name: Restore dotnet tools
+      run: dotnet tool restore
+    - name: Restore dependencies
+      run: dotnet restore inventory-project/Inventory.sln
+    - name: Download frontend LCOV report
+      uses: actions/download-artifact@v4
+      with:
+        name: frontend-coverage-lcov
+        path: coverage/frontend
+    # Vitest writes SF paths relative to react-client/; Sonar resolves them from the repo root.
+    - name: Rebase frontend LCOV paths on the repository root
+      run: |
+        sed -i -E 's#^SF:src[/\\]#SF:react-client/src/#' coverage/frontend/lcov.info
+        grep -c '^SF:react-client/src/' coverage/frontend/lcov.info
+    - name: Sonar — Begin
+      env:
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      run: >
+        dotnet sonarscanner begin
+        /k:"jmacboy_modulo-cicd-2026"
+        /o:"jmacboy"
+        /d:sonar.token="$SONAR_TOKEN"
+        /d:sonar.host.url="https://sonarcloud.io"
+        /d:sonar.cs.opencover.reportsPaths="coverage/**/coverage.opencover.xml"
+        /d:sonar.javascript.lcov.reportPaths="coverage/frontend/lcov.info"
+        /d:sonar.coverage.exclusions="**Tests*/**,react-client/src/tests/**,**/*.test.js,**/*.test.jsx,react-client/src/main.jsx,react-client/*.config.js,react-client/vitest.setup.js"
+        /d:sonar.exclusions="**/Migrations/**,**/obj/**,**/bin/**,**/node_modules/**,**/dist/**,**/coverage/**,react-client/pacts/**"
+        /d:sonar.qualitygate.wait=true
+    - name: Build
+      run: dotnet build inventory-project/Inventory.sln --no-restore
+    - name: Test
+      run: >
+          dotnet test inventory-project/Inventory.sln --no-build
+          --verbosity normal
+          --collect:"XPlat Code Coverage"
+          --results-directory ./coverage/backend
+          -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.Format=opencover,cobertura
+    - name: Sonar — End
+      env:
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      run: dotnet sonarscanner end /d:sonar.token="$SONAR_TOKEN"
+    - name: Generate coverage report
+      run: >
+          dotnet tool run reportgenerator
+          -reports:"./coverage/backend/**/coverage.cobertura.xml"
+          -targetdir:"./coverage/backend/report"
+          -reporttypes:Html
+    - name: Upload backend coverage report
+      uses: actions/upload-artifact@v4
+      with:
+        name: backend-coverage-report
+        path: ./coverage/backend/report
+        retention-days: 7
+        if-no-files-found: error
