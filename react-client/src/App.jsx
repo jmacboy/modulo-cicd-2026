@@ -26,6 +26,7 @@ function App() {
     return (
         <>
             {createError && <p role="alert">{createError}</p>}
+            <h1>Crear Item</h1>
             <form onSubmit={onFormSubmit}>
                 <input
                     type="text"
@@ -43,6 +44,7 @@ function App() {
                 />
                 <button type="submit">Submit</button>
             </form>
+            <h1>Lista de items</h1>
             <ItemList reload={reloadCount} />
         </>
     );
