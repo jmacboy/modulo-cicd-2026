@@ -1,0 +1,10 @@
+**/bin/
+**/obj/
+**/.vs/
+**/*.user
+Inventory.Tests/
+Inventory.IntTests/
+.claude/
+.opencode/
+.atl/
+.codegraph/
