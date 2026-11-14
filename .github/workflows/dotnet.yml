@@ -64,7 +64,7 @@ jobs:
     - name: Test
       run: > 
           dotnet test inventory-project/Inventory.sln --no-build
-          --verbosity normal Inventory.Test 
+          --verbosity normal 
           --collect:"XPlat Code Coverage" 
           --results-directory ./coverage/backend
           -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.Format=opencover,cobertura
